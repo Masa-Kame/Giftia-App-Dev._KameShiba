@@ -15,7 +15,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from database import fetch_all
 from reviews import router as reviews_router
-from products import router as products_router 
+from products import router as products_router
+from votes import router as votes_router    
 
 load_dotenv()  # .env を読む（DB の接続情報・CORS の許可）
 
@@ -29,6 +30,7 @@ origins = [o.strip() for o in os.environ.get("CORS_ORIGINS", "").split(",") if o
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["GET","POST"], allow_headers=["*"])
 app.include_router(reviews_router)
 app.include_router(products_router)
+app.include_router(votes_router) 
 
 @app.get("/api/health")
 def health():

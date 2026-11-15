@@ -141,6 +141,24 @@
   font-weight: 700;
 }
 
+/* 自分が押した評価ボタン */
+.voteButtonOn {
+  border-color: var(--accent);
+  background: #e8eff7;
+  font-weight: 600;
+}
+
+.voteButton:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.voteError {
+  margin: 0;
+  color: #b42318;
+  font-size: 13px;
+}
+
 .message {
   margin: 0;
   color: var(--sub);
