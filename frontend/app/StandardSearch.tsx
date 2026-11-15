@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type CSSProperties, type FormEvent } from "react";
+import { useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import type { SearchCondition } from "@/lib/api";
 
 const CATEGORIES = ["食品", "飲料", "コスメ", "インテリア", "カタログギフト", "ビジネス小物", "フラワー", "家電", "酒類", "生活雑貨"];
@@ -30,8 +30,9 @@ function SearchIcon({ name }: { name: string }) {
 const toggle = (current: string[], value: string) => current.includes(value)
   ? current.filter((item) => item !== value) : [...current, value];
 
-export default function StandardSearch({ onSearch }: {
+export default function StandardSearch({ onSearch, headerContent }: {
   onSearch: (condition: SearchCondition) => Promise<void>;
+  headerContent: ReactNode;
 }) {
   const [keyword, setKeyword] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
@@ -81,8 +82,16 @@ export default function StandardSearch({ onSearch }: {
   }
 
   return (
-    <form className="standard-search" onSubmit={submit}>
-      <p className="search-intro">いまの Giftia の検索（キーワード・カテゴリー・価格帯で探す）</p>
+    <>
+      <div className="search-sticky-header">
+        <div className="search-header-content">{headerContent}</div>
+        <div className="search-actions">
+          <button className="search-submit" type="submit" form="standard-search-form" disabled={pending}><SearchIcon name="search" />{pending ? "検索中…" : "この条件で検索"}</button>
+          <button className="clear-filters" type="button" disabled={pending} onClick={clear}><SearchIcon name="reset" />条件をクリア</button>
+        </div>
+        <p className="search-intro">いまの Giftia の検索（キーワード・カテゴリー・価格帯で探す）</p>
+      </div>
+    <form id="standard-search-form" className="standard-search" onSubmit={submit}>
       <label className="keyword-field">
         <span className="visually-hidden">キーワード</span>
         <SearchIcon name="search" />
@@ -163,11 +172,8 @@ export default function StandardSearch({ onSearch }: {
         </div>
       </details>
 
-      <div className="search-actions">
-        <button className="search-submit" type="submit" disabled={pending}><SearchIcon name="search" />{pending ? "検索中…" : "この条件で検索"}</button>
-        <button className="clear-filters" type="button" disabled={pending} onClick={clear}><SearchIcon name="reset" />条件をクリア</button>
-      </div>
       <p className="development-note"><strong>開発中：</strong>シーン・好み・性別・年代・並び替えは選択内容の確認のみで、検索結果には反映されません。結果は人気順です。カテゴリーは1件選択のみ反映し、複数選択時は全カテゴリーが対象です。</p>
     </form>
+    </>
   );
 }

@@ -42,7 +42,10 @@ body:has(.standard-page) { background:#fff; }
 .standard-page .modes { gap:16px; margin:0; }
 .standard-page .modes button { padding:12px 26px; font-size:20px; font-weight:600; border-color:#d7dee8; }
 .standard-page .modes button.on { background:linear-gradient(135deg,#1b3a5c,#102d4b); }
-.standard-search { display:grid; gap:28px; margin:14px 0 0; padding:0; background:#fff; font-size:clamp(15px,1.35vw,20px); }
+.standard-search-container { display:contents; }
+.search-sticky-header { position:sticky; top:0; z-index:20; display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:start; gap:14px 24px; padding:16px 0; background:#fff; border-bottom:1px solid var(--line); box-shadow:0 5px 8px #1b3a5c08; font-size:clamp(15px,1.35vw,20px); }
+.search-sticky-header .search-intro { grid-column:1 / -1; }
+.standard-search { display:grid; gap:28px; margin:24px 0 0; padding:0; background:#fff; font-size:clamp(15px,1.35vw,20px); }
 .search-intro { margin:0; color:var(--sub); font-size:inherit; line-height:1.8; }
 .field-caption { display:block; margin-bottom:10px; font-size:inherit; font-weight:600; }
 .field-hint { margin-left:8px; color:var(--sub); font-size:.9em; font-weight:400; }
@@ -98,12 +101,16 @@ body:has(.standard-page) { background:#fff; }
 .radio-options label { display:flex; align-items:center; gap:8px; font-size:clamp(14px,1.35vw,20px); cursor:pointer; }
 .radio-options input { width:22px; height:22px; margin:0; }
 .development-note { margin:0; padding:12px 14px; border-radius:6px; background:#f1f5f9; color:var(--sub); font-size:12px; line-height:1.8; }
-.search-actions { display:grid; grid-template-columns:1fr minmax(0,2fr) 1fr; align-items:center; gap:24px; margin-top:6px; }
-.search-submit { grid-column:2; display:flex; align-items:center; justify-content:center; gap:18px; min-height:66px; border:1px solid #102d4b; border-radius:12px; background:linear-gradient(135deg,#1b3a5c,#102d4b); color:#fff; font:inherit; font-size:1.2em; font-weight:600; cursor:pointer; box-shadow:0 3px 6px #1b3a5c18; }
+.search-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:12px; }
+.search-submit { display:flex; align-items:center; justify-content:center; gap:12px; min-height:58px; padding:10px 24px; border:1px solid #102d4b; border-radius:12px; background:linear-gradient(135deg,#1b3a5c,#102d4b); color:#fff; font:inherit; font-size:1em; font-weight:600; cursor:pointer; box-shadow:0 3px 6px #1b3a5c18; }
 .search-submit .search-icon { width:32px; height:32px; color:#fff; }
 .clear-filters { justify-self:end; display:flex; align-items:center; justify-content:center; gap:12px; min-height:58px; padding:10px 22px; border:1px solid #ccd5e2; border-radius:10px; background:#fff; color:inherit; font:inherit; font-size:.95em; cursor:pointer; box-shadow:0 2px 3px #1b3a5c10; }
 .search-actions button:disabled { opacity:.6; cursor:wait; }
 .visually-hidden { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
+@media (min-width:641px) and (max-width:1000px) {
+  .search-sticky-header { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+  .search-actions { flex-direction:column; align-items:stretch; }
+}
 @media (max-width:640px) {
   .standard-page { padding:20px 16px; }
   .standard-page .header h1 { margin-bottom:20px; font-size:38px; }
@@ -118,9 +125,14 @@ body:has(.standard-page) { background:#fff; }
   .standard-price-value { min-width:0; text-align:center; }
   .advanced-content { grid-template-columns:minmax(0,1fr); padding:20px; gap:24px; }
   .advanced-content fieldset + fieldset { border-left:0; padding-left:0; }
-  .search-actions { grid-template-columns:minmax(0,1fr); gap:12px; }
-  .search-submit { grid-column:1; }
-  .clear-filters { justify-self:center; }
+  .search-sticky-header { grid-template-columns:minmax(0,1fr); gap:12px; padding:10px 0; }
+  .search-header-content { display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; }
+  .search-header-content .header h1 { margin:0; font-size:30px; }
+  .search-header-content .modes button { padding:8px 12px; font-size:14px; }
+  .search-actions { justify-content:flex-end; gap:8px; }
+  .search-submit, .clear-filters { min-height:44px; padding:8px 12px; font-size:14px; }
+  .search-actions .search-icon { width:22px; height:22px; }
+  .search-sticky-header .search-intro { font-size:12px; }
   .preference-tags { gap:8px; }
   .preference-tag { padding:9px 11px; }
 }

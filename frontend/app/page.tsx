@@ -51,9 +51,7 @@ export default function Home() {
     }
   }
 
-  // ③ 画面
-  return (
-    <main className={`page${mode === "standard" ? " standard-page" : ""}`}>
+  const headerContent = <>
       <header className="header"><h1>Giftia</h1></header>
 
       {/* タブ：state(mode)＋条件で出し分ける */}
@@ -61,9 +59,14 @@ export default function Home() {
         <button className={mode === "standard" ? "on" : ""} onClick={() => { setMode("standard"); setResults(null); }}>いまの検索</button>
         <button className={mode === "business" ? "on" : ""} onClick={() => { setMode("business"); setResults(null); }}>取引先へのお礼</button>
       </nav>
+  </>;
 
-      <div hidden={mode !== "standard"}>
-        <StandardSearch onSearch={searchStandard} />
+  // ③ 画面
+  return (
+    <main className={`page${mode === "standard" ? " standard-page" : ""}`}>
+      {mode === "business" && headerContent}
+      <div className={mode === "standard" ? "standard-search-container" : undefined} hidden={mode !== "standard"}>
+        <StandardSearch onSearch={searchStandard} headerContent={headerContent} />
       </div>
       {mode === "business" && <form className="form" onSubmit={onSearch}>
             <label className="chk"><input type="checkbox" checked={indivWrap} onChange={(e) => setIndivWrap(e.target.checked)} /> 個包装</label>
