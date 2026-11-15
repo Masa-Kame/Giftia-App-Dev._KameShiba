@@ -4,70 +4,92 @@
 // 1週目との違い：①searchGifts が FastAPI を呼ぶ（async/await）②入力した条件を渡す ③つながらないときの表示
 "use client"; // ← ブラウザで動く合図。useState や onClick を使う画面に必要
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
+import Image from "next/image";
 import ResultCard from "./ResultCard";
-import { searchGifts, type Gift } from "@/lib/api";
+import StandardSearch from "./StandardSearch";
+import { searchGifts, type Gift, type SearchCondition } from "@/lib/api";
+
+const PRICE_MAX = 30000;
+const PRICE_STEP = 500;
 
 export default function Home() {
   // ① 状態（変化するデータ）を覚える箱
   const [mode, setMode] = useState<"standard" | "business">("standard"); // どのタブか
-  const [keyword, setKeyword] = useState("");                             // 入力した言葉
-  const [category, setCategory] = useState("");                           // 選んだカテゴリー
   const [indivWrap, setIndivWrap] = useState(false);                      // 個包装だけ（取引先へのお礼）
-  const [priceBand, setPriceBand] = useState("");                         // 価格帯（取引先へのお礼）
+  const [priceMin, setPriceMin] = useState(0);
+  const [priceMax, setPriceMax] = useState(PRICE_MAX); // 右端は上限なし
   const [results, setResults] = useState<Gift[] | null>(null);            // 検索結果
   const [error, setError] = useState("");                                 // つながらないときの文言
+
+  async function searchStandard(condition: SearchCondition) {
+    setError("");
+    try {
+      setResults(await searchGifts(condition));
+    } catch (err) {
+      setResults(null);
+      setError(`APIにつながりません：${(err as Error).message}`);
+    }
+  }
 
   // ② 検索ボタンの処理（API に聞くので、結果が返るまで待つ＝async/await）
   async function onSearch(e: React.FormEvent) {
     e.preventDefault(); // ページの再読み込みを止める
     setError("");
-    // いま開いているタブの条件だけを送る（もう一方のタブの入力は送らない）
-    const condition = mode === "standard"
-      ? { keyword, category, indivWrap: false, priceBand: "" }
-      : { keyword: "", category: "", indivWrap, priceBand };
+    const selectedCategories: string[] = [];
+    const maxPrice = priceMax === PRICE_MAX ? undefined : priceMax;
+    console.log("検索条件", {
+      categories: selectedCategories,
+      priceMin,
+      priceMax: maxPrice ?? null, // null は上限なし
+    });
+    const condition = { keyword: "", category: "", indivWrap, priceBand: "" };
     try {
-      setResults(await searchGifts(condition));
+      setResults(await searchGifts({ ...condition, priceMin, priceMax: maxPrice }));
     } catch (err) {
       setResults(null);
       setError(`APIにつながりません：${(err as Error).message}`); // 原因はブラウザの Console に出る
     }
   }
 
+  const headerContent = <header className="header"><h1>{mode === "standard"
+    ? <Image className="giftia-logo" src="/giftia-logo.png" alt="Giftia" width={1297} height={371} unoptimized preload />
+    : "Giftia"}</h1></header>;
+
+  // タブは通常検索の条件エリアと、取引先画面で共用する。
+  const tabsContent = <nav className="modes">
+        <button type="button" className={mode === "standard" ? "on" : ""} onClick={() => { setMode("standard"); setResults(null); }}>いまの検索</button>
+        <button type="button" className={mode === "business" ? "on" : ""} onClick={() => { setMode("business"); setResults(null); }}>取引先へのお礼</button>
+      </nav>;
+
   // ③ 画面
   return (
-    <main className="page">
-      <header className="header"><h1>Giftia</h1></header>
-
-      {/* タブ：state(mode)＋条件で出し分ける */}
-      <nav className="modes">
-        <button className={mode === "standard" ? "on" : ""} onClick={() => { setMode("standard"); setResults(null); }}>いまの検索</button>
-        <button className={mode === "business" ? "on" : ""} onClick={() => { setMode("business"); setResults(null); }}>取引先へのお礼</button>
-      </nav>
-
-      <form className="form" onSubmit={onSearch}>
-        {mode === "standard" ? (
-          <>
-            <input className="q" value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="キーワード（例：送別 お菓子）" />
-            <select value={category} onChange={(e) => setCategory(e.target.value)}>
-              <option value="">すべてのカテゴリー</option>
-              <option value="コスメ">コスメ</option>
-              <option value="食品">食品</option>
-              <option value="生活雑貨">生活雑貨</option>
-            </select>
-          </>
-        ) : (
-          <>
+    <main className={`page${mode === "standard" ? " standard-page" : ""}`}>
+      {mode === "business" && <>{headerContent}{tabsContent}</>}
+      <div className={mode === "standard" ? "standard-search-container" : undefined} hidden={mode !== "standard"}>
+        <StandardSearch onSearch={searchStandard} headerContent={headerContent} tabsContent={tabsContent} />
+      </div>
+      {mode === "business" && <form className="form" onSubmit={onSearch}>
             <label className="chk"><input type="checkbox" checked={indivWrap} onChange={(e) => setIndivWrap(e.target.checked)} /> 個包装</label>
-            <select value={priceBand} onChange={(e) => setPriceBand(e.target.value)}>
-              <option value="">すべての価格帯</option>
-              <option value="3000">3,000〜5,000円</option>
-              <option value="5000">5,000〜10,000円</option>
-            </select>
-          </>
-        )}
+        <fieldset className="filter-group price-filter" aria-describedby="price-note">
+          <legend>価格帯（500円刻み）</legend>
+          <p className="price-value">{priceMin.toLocaleString("ja-JP")}円 〜 {priceMax === PRICE_MAX ? "上限なし" : `${priceMax.toLocaleString("ja-JP")}円`}</p>
+          <div className="price-slider" style={{
+            "--price-start": `${priceMin / PRICE_MAX * 100}%`,
+            "--price-end": `${priceMax / PRICE_MAX * 100}%`,
+          } as CSSProperties}>
+            <input className={`price-range${priceMin === PRICE_MAX ? " at-end" : ""}`} type="range" aria-label="最小価格" aria-describedby="price-note" min={0} max={PRICE_MAX} step={PRICE_STEP} value={priceMin}
+              aria-valuetext={`${priceMin.toLocaleString("ja-JP")}円`}
+              onChange={(e) => setPriceMin(Math.min(Number(e.target.value), priceMax))} />
+            <input className="price-range" type="range" aria-label="最大価格" aria-describedby="price-note" min={0} max={PRICE_MAX} step={PRICE_STEP} value={priceMax}
+              aria-valuetext={priceMax === PRICE_MAX ? "上限なし" : `${priceMax.toLocaleString("ja-JP")}円`}
+              onChange={(e) => setPriceMax(Math.max(Number(e.target.value), priceMin))} />
+          </div>
+          <div className="price-labels"><span>0円</span><span>30,000円以上（上限なし）</span></div>
+          <p id="price-note" className="summary">左のつまみで最小価格、右のつまみで最大価格を指定します。右端は上限なしです。</p>
+        </fieldset>
         <button type="submit">検索</button>
-      </form>
+      </form>}
 
       {error && <p className="summary">{error}</p>}
 
