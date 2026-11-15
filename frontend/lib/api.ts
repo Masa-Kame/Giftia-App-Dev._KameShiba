@@ -20,6 +20,8 @@ export type SearchCondition = {
   category: string;   // いまの検索：カテゴリー（空ならすべて）
   indivWrap: boolean; // 取引先へのお礼：個包装だけ
   priceBand: string;  // 取引先へのお礼："" | "3000" | "5000"
+  priceMin?: number; // バーの下限（以上）
+  priceMax?: number; // バーの上限（以下）。未指定は上限なし
 };
 
 // API の場所。NEXT_PUBLIC_ の値はブラウザに配られる＝秘密は置かない（.env.local に書く）
@@ -34,6 +36,8 @@ export async function searchGifts(c: SearchCondition): Promise<Gift[]> {
   if (c.indivWrap) params.set("indiv_wrap", "true");
   if (c.priceBand === "3000") { params.set("price_min", "3000"); params.set("price_max", "4999"); } // 3,000以上 5,000未満
   if (c.priceBand === "5000") { params.set("price_min", "5000"); params.set("price_max", "9999"); } // 5,000以上 10,000未満
+  if (c.priceMin !== undefined) params.set("price_min", String(c.priceMin));
+  if (c.priceMax !== undefined) params.set("price_max", String(c.priceMax));
 
   // ② fetch で API を呼ぶ（通信が終わるまで待つ＝await）
   const res = await fetch(`${API}/api/search?${params.toString()}`);
