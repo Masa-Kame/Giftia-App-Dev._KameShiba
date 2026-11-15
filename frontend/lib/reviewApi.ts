@@ -7,8 +7,10 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export type ReviewListResponse = {
-  total: number;
+  total: number; // 選んだシーンの件数
   results: Review[];
+  scene_counts: Record<Scene, number>; // シーンごとの件数（商品の口コミ全体）
+  all_count: number; // すべての件数
 };
 
 // APIがエラーを返したとき、理由（detail）を取り出す

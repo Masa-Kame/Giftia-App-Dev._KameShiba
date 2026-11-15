@@ -27,7 +27,8 @@ def list_reviews(
     scene: str = Query(default="", description="利用シーン（空ならすべて）"),
     limit: int = Query(default=50, ge=1, le=100, description="返す件数"),
 ):
-    """商品の口コミを新着順で返す。scene を指定すると、そのシーンの口コミだけ返す（#7）"""
+    """商品の口コミを新着順で返す。scene を指定すると、そのシーンの口コミだけ返す（#7）
+    あわせて、シーンごとの口コミ件数（scene_counts）とすべての件数（all_count）も返す"""
     where, params = ["product_id = %s"], [product_id]
     if scene:
         if scene not in SCENES:
@@ -44,7 +45,20 @@ def list_reviews(
             LIMIT %s""",
         (*params, limit),
     )
-    return {"total": total, "results": rows}
+
+    # シーンごとの件数(絞り込みボタンに表示する)。選んだシーンに関係なく、その商品の口コミ全体で数える
+    count_rows = fetch_all(
+        "SELECT scene_tag, COUNT(*) AS n FROM reviews WHERE product_id = %s GROUP BY scene_tag",
+        (product_id,),
+    )
+    scene_counts = {s: 0 for s in SCENES}
+    all_count = 0
+    for r in count_rows:
+        all_count += r["n"]
+        if r["scene_tag"] in scene_counts:
+            scene_counts[r["scene_tag"]] = r["n"]
+
+    return {"total": total, "results": rows, "scene_counts": scene_counts, "all_count": all_count}
 
 
 class ReviewCreate(BaseModel):
