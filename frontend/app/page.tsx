@@ -5,6 +5,7 @@
 "use client"; // ← ブラウザで動く合図。useState や onClick を使う画面に必要
 
 import { useState, type CSSProperties } from "react";
+import Image from "next/image";
 import ResultCard from "./ResultCard";
 import StandardSearch from "./StandardSearch";
 import { searchGifts, type Gift, type SearchCondition } from "@/lib/api";
@@ -51,22 +52,22 @@ export default function Home() {
     }
   }
 
-  const headerContent = <>
-      <header className="header"><h1>Giftia</h1></header>
+  const headerContent = <header className="header"><h1>{mode === "standard"
+    ? <Image className="giftia-logo" src="/giftia-logo.png" alt="Giftia" width={1297} height={371} unoptimized preload />
+    : "Giftia"}</h1></header>;
 
-      {/* タブ：state(mode)＋条件で出し分ける */}
-      <nav className="modes">
-        <button className={mode === "standard" ? "on" : ""} onClick={() => { setMode("standard"); setResults(null); }}>いまの検索</button>
-        <button className={mode === "business" ? "on" : ""} onClick={() => { setMode("business"); setResults(null); }}>取引先へのお礼</button>
-      </nav>
-  </>;
+  // タブは通常検索の条件エリアと、取引先画面で共用する。
+  const tabsContent = <nav className="modes">
+        <button type="button" className={mode === "standard" ? "on" : ""} onClick={() => { setMode("standard"); setResults(null); }}>いまの検索</button>
+        <button type="button" className={mode === "business" ? "on" : ""} onClick={() => { setMode("business"); setResults(null); }}>取引先へのお礼</button>
+      </nav>;
 
   // ③ 画面
   return (
     <main className={`page${mode === "standard" ? " standard-page" : ""}`}>
-      {mode === "business" && headerContent}
+      {mode === "business" && <>{headerContent}{tabsContent}</>}
       <div className={mode === "standard" ? "standard-search-container" : undefined} hidden={mode !== "standard"}>
-        <StandardSearch onSearch={searchStandard} headerContent={headerContent} />
+        <StandardSearch onSearch={searchStandard} headerContent={headerContent} tabsContent={tabsContent} />
       </div>
       {mode === "business" && <form className="form" onSubmit={onSearch}>
             <label className="chk"><input type="checkbox" checked={indivWrap} onChange={(e) => setIndivWrap(e.target.checked)} /> 個包装</label>
