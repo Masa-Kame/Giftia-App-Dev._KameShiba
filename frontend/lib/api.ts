@@ -18,6 +18,7 @@ export type Gift = {
 export type SearchCondition = {
   keyword: string;    // いまの検索：キーワード
   category: string;   // いまの検索：カテゴリー（空ならすべて）
+  categories?: string[]; // 複数選択（OR検索）。非空ならcategoryより優先
   indivWrap: boolean; // 取引先へのお礼：個包装だけ
   priceBand: string;  // 取引先へのお礼："" | "3000" | "5000"
   priceMin?: number; // バーの下限（以上）
@@ -32,7 +33,12 @@ export async function searchGifts(c: SearchCondition): Promise<Gift[]> {
   // ① 条件を URL のクエリ（?q=...&category=...）に組み立てる。空の条件は送らない
   const params = new URLSearchParams();
   if (c.keyword) params.set("q", c.keyword);
-  if (c.category) params.set("category", c.category);
+  const categories = c.categories?.filter((value) => value !== "") ?? [];
+  if (categories.length > 0) {
+    categories.forEach((category) => params.append("categories", category));
+  } else if (c.category) {
+    params.set("category", c.category);
+  }
   if (c.indivWrap) params.set("indiv_wrap", "true");
   if (c.priceBand === "3000") { params.set("price_min", "3000"); params.set("price_max", "4999"); } // 3,000以上 5,000未満
   if (c.priceBand === "5000") { params.set("price_min", "5000"); params.set("price_max", "9999"); } // 5,000以上 10,000未満

@@ -39,6 +39,7 @@ def health():
 def search(
     q: str = Query(default="", description="キーワード（空白区切りで複数。すべてを含む商品）"),
     category: str = Query(default="", description="カテゴリー（空ならすべて）"),
+    categories: list[str] | None = Query(default=None, description="カテゴリーの複数指定（OR検索。categoryより優先）"),
     indiv_wrap: bool = Query(default=False, description="true なら、説明文に「個包装」とある商品だけ"),
     price_min: int | None = Query(default=None, ge=0, description="価格の下限（以上）"),
     price_max: int | None = Query(default=None, ge=0, description="価格の上限（以下）"),
@@ -50,7 +51,12 @@ def search(
     for word in q.split():  # 【穴1】q を空白で区切って1語ずつにする（文字列のメソッド）
         where.append("(product_name LIKE %s OR brand LIKE %s OR description LIKE %s)")
         params += [f"%{word}%"] * 3
-    if category:
+    selected_categories = [value for value in (categories or []) if value]
+    if selected_categories:
+        placeholders = ", ".join(["%s"] * len(selected_categories))
+        where.append(f"category IN ({placeholders})")
+        params.extend(selected_categories)
+    elif category:
         where.append("category = %s")
         params.append(category)  # 【穴2】%s に入れる値（受け取ったカテゴリー）
     if indiv_wrap:

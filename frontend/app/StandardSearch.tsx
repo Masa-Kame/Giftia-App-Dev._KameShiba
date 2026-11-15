@@ -105,7 +105,7 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
     setPending(true);
     try {
       // 未対応条件は送らず、既存のAPI契約を維持する。
-      await onSearch({ keyword, category: categories.length === 1 ? categories[0] : "",
+      await onSearch({ keyword, category: "", categories,
         indivWrap: false, priceBand: "", priceMin, priceMax: maxPrice });
     } finally {
       setPending(false);
@@ -221,7 +221,7 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
         </label>)}</div>
       </fieldset>
 
-      <p className="development-note"><strong>開発中：</strong>シーン・好み・性別・年代・並び替えは選択内容の確認のみで、検索結果には反映されません。結果は人気順です。カテゴリーは1件選択のみ反映し、複数選択時は全カテゴリーが対象です。</p>
+      <p className="development-note"><strong>開発中：</strong>シーン・好み・性別・年代・並び替えは選択内容の確認のみで、検索結果には反映されません。結果は人気順です。カテゴリーは選択したいずれかに該当する商品が対象です。</p>
     </form>
     </>
   );
