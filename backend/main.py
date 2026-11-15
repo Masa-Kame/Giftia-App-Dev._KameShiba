@@ -15,6 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from database import fetch_all
 from reviews import router as reviews_router
+from products import router as products_router 
 
 load_dotenv()  # .env を読む（DB の接続情報・CORS の許可）
 
@@ -27,6 +28,7 @@ app = FastAPI(title="Giftia Search API（2週目）")
 origins = [o.strip() for o in os.environ.get("CORS_ORIGINS", "").split(",") if o.strip()]
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["GET","POST"], allow_headers=["*"])
 app.include_router(reviews_router)
+app.include_router(products_router)
 
 @app.get("/api/health")
 def health():

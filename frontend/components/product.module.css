@@ -1,0 +1,362 @@
+/* product.module.css — 商品詳細画面のヘッダー・購入エリア・商品情報
+   色・角丸はトップ画面（app/globals.css）にそろえている */
+
+/* ── ヘッダー ───────────────────────── */
+.siteHeader {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+}
+
+.headerNav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.navLink,
+.navButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid #ccd5e2;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.navLink:hover,
+.navButton:hover {
+  background: #e8eff7;
+}
+
+.navCart {
+  border-color: #102d4b;
+  background: linear-gradient(135deg, #1b3a5c, #102d4b);
+  color: #fff;
+}
+
+.navCart:hover {
+  background: #102d4b;
+}
+
+.badge {
+  min-width: 22px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #deecff;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.notice {
+  margin: 12px 0 0;
+}
+
+/* ── パンくず ───────────────────────── */
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--sub);
+  font-size: 13px;
+}
+
+.breadcrumb li + li::before {
+  content: "›";
+  margin-right: 6px;
+}
+
+.breadcrumb a {
+  color: var(--accent);
+}
+
+/* ── 購入エリア ───────────────────────── */
+.purchase {
+  display: grid;
+  gap: 14px;
+}
+
+.brand {
+  margin: 0;
+  color: var(--sub);
+  font-size: 14px;
+}
+
+.productName {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.4;
+}
+
+.ratingRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  font-size: 14px;
+}
+
+.stars {
+  color: #d69e2e;
+  letter-spacing: 1px;
+}
+
+.starsEmpty {
+  color: #d5dce5;
+}
+
+.ratingLink {
+  color: var(--accent);
+}
+
+.price {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.priceUnit {
+  margin-left: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--sub);
+}
+
+.socialProof {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #deecff;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.giftBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.giftBadge {
+  padding: 4px 12px;
+  border: 1px solid #d5dce5;
+  border-radius: 999px;
+  background: #f5f6f8;
+  color: #465365;
+  font-size: 13px;
+}
+
+.stock {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.stockOk {
+  color: #1b7a43;
+}
+
+.stockLow {
+  color: #b54708;
+}
+
+.stockOut {
+  color: #b42318;
+}
+
+.buyBox {
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.quantityRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.quantity {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #ccd5e2;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.quantity button {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: #f5f6f8;
+  color: var(--accent);
+  font: inherit;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.quantity button:disabled {
+  color: #c4ccd8;
+  cursor: not-allowed;
+}
+
+.quantity output {
+  min-width: 48px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.buyButtons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.buyButtons :global(.search-submit) {
+  min-height: 52px;
+}
+
+.buyNow {
+  min-height: 52px;
+  padding: 10px 16px;
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.buyNow:hover {
+  background: #e8eff7;
+}
+
+.buyButtons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.favorite {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid #d5dce5;
+  border-radius: 999px;
+  background: #fff;
+  color: #465365;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.favoriteOn {
+  border-color: #e0526b;
+  background: #fff1f3;
+  color: #c8304d;
+}
+
+/* ── 商品情報 ───────────────────────── */
+.details {
+  display: grid;
+  gap: 16px;
+}
+
+.description {
+  margin: 0;
+  line-height: 1.9;
+  white-space: pre-wrap;
+}
+
+.specTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.specTable th,
+.specTable td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.specTable th {
+  width: 180px;
+  background: #f5f6f8;
+  color: var(--sub);
+  font-weight: 600;
+}
+
+.tagRow {
+  display: grid;
+  gap: 8px;
+}
+
+.tagLabel {
+  margin: 0;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* ── スマホ ───────────────────────── */
+@media (max-width: 640px) {
+  .siteHeader {
+    flex-wrap: wrap;
+  }
+
+  .navLink,
+  .navButton {
+    min-height: 40px;
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .productName {
+    font-size: 22px;
+  }
+
+  .price {
+    font-size: 26px;
+  }
+
+  .buyButtons {
+    grid-template-columns: 1fr;
+  }
+
+  .specTable th {
+    width: 110px;
+  }
+}
