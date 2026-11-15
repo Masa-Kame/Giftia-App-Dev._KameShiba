@@ -1,4 +1,4 @@
-# database.py — 班のDB（Azure Database for MySQL）につなぐ（穴なし。置いて、読む）
+# database.py — 班のDB（Azure Database for MySQL）につなぐ
 #
 # 接続情報は .env に置く（Workbench に入れたものと同じ5つ）。コードに書かない。GitHub に上げない。
 #   DB_HOST     = ホスト名（xxx.mysql.database.azure.com）
@@ -9,6 +9,7 @@
 #   DB_SSL_CA   = 配布された SSL証明書のパス（任意。入れると Workbench の「Verify CA」と同じく相手を確かめる）
 
 import os
+from contextlib import contextmanager
 
 import pymysql
 from dotenv import load_dotenv
@@ -47,5 +48,28 @@ def fetch_all(query: str, params: tuple = ()) -> list[dict]:
         with conn.cursor() as cur:
             cur.execute(query, params)
             return cur.fetchall()
+    finally:
+        conn.close()
+
+
+# ── ここから追加（口コミ機能 #6・#7・#11 で使う）─────────────────
+@contextmanager
+def transaction():
+    """書き込み（INSERT / UPDATE）用。with の中の処理をまとめて1回で確定する。
+    途中でエラーが起きたら全部取り消す（例：評価履歴だけ入って件数が増えない、を防ぐ）。
+
+    使い方：
+        with transaction() as cur:
+            cur.execute("INSERT ...", (値, 値))
+            cur.execute("UPDATE ...", (値,))
+    """
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            yield cur
+        conn.commit()  # ここまで来たら確定
+    except Exception:
+        conn.rollback()  # エラーなら取り消し
+        raise
     finally:
         conn.close()
