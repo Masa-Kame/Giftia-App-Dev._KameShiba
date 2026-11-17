@@ -10,13 +10,8 @@ import SceneFilter from "@/components/SceneFilter";
 import ReviewList from "@/components/ReviewList";
 import ReviewForm from "@/components/ReviewForm";
 import { fetchProduct, type Product } from "@/lib/productApi";
-import { fetchReviews } from "@/lib/reviewApi";
-import {
-  ALL_SCENES,
-  type Review,
-  type Scene,
-  type SceneFilterValue,
-} from "@/types/review";
+import { fetchReviews, type ReviewListResponse } from "@/lib/reviewApi";
+import { ALL_SCENES, type SceneFilterValue } from "@/types/review";
 import styles from "@/components/review.module.css";
 import productStyles from "@/components/product.module.css";
 
@@ -27,9 +22,14 @@ import productStyles from "@/components/product.module.css";
 export default function ProductDetailPage() {
   const { id: productId } = useParams<{ id: string }>();
 
+  // 取得結果を「どの条件で取ったか（key）」と一緒に持ち、useEffect内で直接setStateしない（ESLint対応）
+  
   // 商品情報
-  const [product, setProduct] = useState<Product | null>(null);
-  const [productError, setProductError] = useState("");
+  const [productResult, setProductResult] = useState<{
+    key: string;
+    product?: Product;
+    error?: string;
+  } | null>(null);
 
   // カート・お気に入り（表示だけ）
   const [cartCount, setCartCount] = useState(0);
@@ -39,27 +39,26 @@ export default function ProductDetailPage() {
   // 口コミ
   const [selectedScene, setSelectedScene] =
     useState<SceneFilterValue>(ALL_SCENES);
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [total, setTotal] = useState(0);
-  const [sceneCounts, setSceneCounts] = useState<Record<Scene, number> | null>(null);
-  const [allCount, setAllCount] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
   const [reloadKey, setReloadKey] = useState(0); // 増やすと一覧を読み直す
+  const [reviewResult, setReviewResult] = useState<{
+    key: string;
+    data?: ReviewListResponse;
+    error?: string;
+  } | null>(null);
 
   // 商品情報を取得する
   useEffect(() => {
-    let ignore = false;
-    setProductError("");
+    let ignore = false; // 古い通信の結果で上書きしないための目印
     fetchProduct(productId)
-      .then((data) => {
-        if (!ignore) setProduct(data);
+      .then((product) => {
+        if (!ignore) setProductResult({ key: productId, product });
       })
       .catch((err) => {
         if (!ignore) {
-          setProductError(
-            err instanceof Error ? err.message : "商品情報を取得できませんでした"
-          );
+          setProductResult({
+            key: productId,
+            error: err instanceof Error ? err.message : "商品情報を取得できませんでした",
+          });
         }
       });
     return () => {
@@ -68,47 +67,53 @@ export default function ProductDetailPage() {
   }, [productId]);
 
   // シーンを切り替えたとき・投稿したときに、APIから口コミを取り直す（#8）
+  const reviewKey = `${productId}|${selectedScene}|${reloadKey}`;
   useEffect(() => {
-    let ignore = false; // 古い通信の結果で上書きしないための目印
-    setIsLoading(true);
-    setError("");
-
+    let ignore = false;
     fetchReviews(productId, selectedScene)
       .then((data) => {
-        if (ignore) return;
-        setReviews(data.results);
-        setTotal(data.total);
-        setSceneCounts(data.scene_counts);
-        setAllCount(data.all_count);
+        if (!ignore) setReviewResult({ key: reviewKey, data });
       })
       .catch((err) => {
-        if (ignore) return;
-        setError(
-          err instanceof Error ? err.message : "口コミを取得できませんでした"
-        );
-      })
-      .finally(() => {
-        if (!ignore) setIsLoading(false);
+        if (!ignore) {
+          setReviewResult({
+            key: reviewKey,
+            error: err instanceof Error ? err.message : "口コミを取得できませんでした",
+          });
+        }
       });
-
     return () => {
       ignore = true;
     };
-  }, [productId, selectedScene, reloadKey]);
+  }, [productId, selectedScene, reviewKey]);
+
+  // 画面に使う値
+  const product =
+    productResult?.key === productId ? productResult.product ?? null : null;
+  const productError =
+    productResult?.key === productId ? productResult.error ?? "" : "";
+
+  const isLoading = reviewResult?.key !== reviewKey;
+  const error = !isLoading ? reviewResult?.error ?? "" : "";
+  const reviews = !isLoading ? reviewResult?.data?.results ?? [] : [];
+  const total = reviewResult?.data?.total ?? 0;
+  // 件数は読み込み中も前回の値を出しておく（ボタンの数字がちらつかないように）
+  const sceneCounts = reviewResult?.data?.scene_counts ?? null;
+  const allCount = reviewResult?.data?.all_count ?? null;
 
   const handleAddToCart = (quantity: number) => {
     setCartCount((n) => n + quantity);
-    setNotice(`カートに${quantity}個入れました（デモ版のため、カートの中身は保存されません）`);
+    setNotice(`カートに${quantity}個入れました`);
   };
   const handleBuyNow = (quantity: number) => {
-    setNotice(`${quantity}個の購入手続きへ進みます（デモ版のため、購入画面はありません）`);
+    setNotice(`${quantity}個の購入手続きへ進みます`);
   };
   const handleToggleFavorite = () => {
     setIsFavorite((v) => !v);
     setNotice(
       isFavorite
         ? "お気に入りから外しました"
-        : "お気に入りに追加しました（デモ版のため保存されません）"
+        : "お気に入りに追加しました"
     );
   };
 
@@ -117,8 +122,8 @@ export default function ProductDetailPage() {
       <SiteHeader
         cartCount={cartCount}
         favoriteCount={isFavorite ? 1 : 0}
-        onCartClick={() => setNotice("デモ版のため、カート画面はありません")}
-        onFavoritesClick={() => setNotice("デモ版のため、お気に入り一覧の画面はありません")}
+        onCartClick={() => setNotice("カート画面は準備中")}
+        onFavoritesClick={() => setNotice("お気に入り一覧の画面は準備中")}
       />
 
       {notice && (
@@ -174,8 +179,7 @@ export default function ProductDetailPage() {
             counts={sceneCounts}
             allCount={allCount}
           />
-
-          <p className="tag-hint">
+                    <p className="tag-hint">
             選択中：{selectedScene}
             {!isLoading && !error && `（${total}件）`}
           </p>
