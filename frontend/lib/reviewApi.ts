@@ -1,6 +1,6 @@
 // 口コミAPI（FastAPI）を呼ぶ関数
-import type { Review, Scene, SceneFilterValue } from "@/types/review";
-import { ALL_SCENES } from "@/types/review";
+import type { Review, Scene, SceneFilterValue, VoteType } from "@/types/review";
+import { ALL_SCENES, TEST_USER_ID } from "@/types/review";
 
 // APIのURL（既存の lib/api.ts と同じ設定を使う）
 const API_BASE_URL =
@@ -31,6 +31,8 @@ export async function fetchReviews(
 ): Promise<ReviewListResponse> {
   const params = new URLSearchParams();
   if (scene !== ALL_SCENES) params.set("scene", scene);
+  // ログインがないため、テスト用ユーザーとして「自分が押した評価」を受け取る（#10）
+  params.set("user_id", TEST_USER_ID);
 
   const res = await fetch(
     `${API_BASE_URL}/api/products/${encodeURIComponent(productId)}/reviews?${params}`,
@@ -58,6 +60,30 @@ export async function postReview(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
+    }
+  );
+  if (!res.ok) throw await toError(res);
+  return res.json();
+}
+
+export type VoteResult = {
+  review_id: string;
+  vote_good_count: number;
+  vote_bad_count: number;
+  my_vote: VoteType | null;
+};
+
+// #10・#11 口コミの評価（同じボタンをもう一度押すと取り消し、逆のボタンで切り替え）
+export async function postVote(
+  reviewId: string,
+  voteType: VoteType
+): Promise<VoteResult> {
+  const res = await fetch(
+    `${API_BASE_URL}/api/reviews/${encodeURIComponent(reviewId)}/votes`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: TEST_USER_ID, vote_type: voteType }),
     }
   );
   if (!res.ok) throw await toError(res);

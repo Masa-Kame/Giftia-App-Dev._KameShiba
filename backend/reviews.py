@@ -20,30 +20,41 @@ REVIEW_COLUMNS = """review_id, product_id, user_id, rating, comment, posted_at, 
     COALESCE(vote_good_count, 0) AS vote_good_count,
     COALESCE(vote_bad_count, 0) AS vote_bad_count"""
 
+# 一覧用：上と同じ列に、見ている人の評価（my_vote）を足したもの。review_rating と結合するので r. を付ける
+LIST_COLUMNS = """r.review_id, r.product_id, r.user_id, r.rating, r.comment, r.posted_at, r.scene_tag,
+    COALESCE(r.vote_good_count, 0) AS vote_good_count,
+    COALESCE(r.vote_bad_count, 0) AS vote_bad_count,
+    rr.vote_type AS my_vote"""
+
 
 @router.get("")
 def list_reviews(
     product_id: str,
     scene: str = Query(default="", description="利用シーン（空ならすべて）"),
     limit: int = Query(default=50, ge=1, le=100, description="返す件数"),
+    user_id: str = Query(default="", description="見ている人のユーザーID（その人が押した評価を my_vote で返す）"),
 ):
     """商品の口コミを新着順で返す。scene を指定すると、そのシーンの口コミだけ返す（#7）
-    あわせて、シーンごとの口コミ件数（scene_counts）とすべての件数（all_count）も返す"""
-    where, params = ["product_id = %s"], [product_id]
+    あわせて、シーンごとの口コミ件数（scene_counts）とすべての件数（all_count）も返す
+    user_id を渡すと、口コミごとにその人が押した評価（my_vote：1/2/null）も返す（#10）"""
+    where, params = ["r.product_id = %s"], [product_id]
     if scene:
         if scene not in SCENES:
             raise HTTPException(status_code=400, detail=f"利用シーンが正しくありません: {scene}")
-        where.append("scene_tag = %s")
+        where.append("r.scene_tag = %s")
         params.append(scene)
     condition = " AND ".join(where)
 
-    total = fetch_all(f"SELECT COUNT(*) AS n FROM reviews WHERE {condition}", tuple(params))[0]["n"]
+    total = fetch_all(f"SELECT COUNT(*) AS n FROM reviews r WHERE {condition}", tuple(params))[0]["n"]
     rows = fetch_all(
-        f"""SELECT {REVIEW_COLUMNS}
-            FROM reviews WHERE {condition}
-            ORDER BY posted_at DESC, review_id DESC
+        f"""SELECT {LIST_COLUMNS}
+            FROM reviews r
+            LEFT JOIN review_rating rr
+              ON rr.review_id = r.review_id AND rr.user_id = %s
+            WHERE {condition}
+            ORDER BY r.posted_at DESC, r.review_id DESC
             LIMIT %s""",
-        (*params, limit),
+        (user_id, *params, limit),
     )
 
     # シーンごとの件数(絞り込みボタンに表示する)。選んだシーンに関係なく、その商品の口コミ全体で数える

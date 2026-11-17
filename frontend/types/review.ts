@@ -30,7 +30,13 @@ export type Review = {
   scene_tag: Scene | null; // 既存の口コミは未設定(NULL)
   vote_good_count: number; // 参考になった
   vote_bad_count: number; // 参考にならなかった
+  my_vote?: VoteType | null; // 見ている人が押した評価（押していなければ null）
 };
+
+// 評価の種類（review_rating.vote_type と同じ値）
+export const VOTE_GOOD = 1; // 参考になった
+export const VOTE_BAD = 2; // 参考にならなかった
+export type VoteType = typeof VOTE_GOOD | typeof VOTE_BAD;
 
 // 並び替え(#12・#13)
 export const SORT_OPTIONS = [
