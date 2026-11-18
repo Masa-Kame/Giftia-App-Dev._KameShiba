@@ -44,12 +44,16 @@ class SearchApiTests(unittest.TestCase):
         database.fetch_all = fetch_all
         dotenv = types.ModuleType("dotenv")
         dotenv.load_dotenv = Mock()
-        reviews = types.ModuleType("reviews")
-        reviews.router = APIRouter()
+        router_modules = {}
+        for name in ("reviews", "products", "votes"):
+            router_module = types.ModuleType(name)
+            router_module.router = APIRouter()
+            router_modules[name] = router_module
         module = types.ModuleType("search_under_test")
         source_path = Path(__file__).resolve().parents[1] / "main.py"
-        # 本物のdatabase/reviewsはimportしない。dotenvの呼び出しもスタブ化する。
-        with patch.dict("sys.modules", {"database": database, "dotenv": dotenv, "reviews": reviews}):
+        # 検索以外のルーターとDB接続を隔離し、dotenvの呼び出しもスタブ化する。
+        # patchの終了時にsys.modulesは元に戻るため、他のテストには影響しない。
+        with patch.dict("sys.modules", {"database": database, "dotenv": dotenv, **router_modules}):
             exec(compile(source_path.read_text(encoding="utf-8"), str(source_path), "exec"), module.__dict__)
         self.client = TestClient(module.app)
         self.addCleanup(self.client.close)
