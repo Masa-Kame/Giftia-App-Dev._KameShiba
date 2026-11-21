@@ -4,7 +4,7 @@
 // 1週目との違い：①searchGifts が FastAPI を呼ぶ（async/await）②入力した条件を渡す ③つながらないときの表示
 "use client"; // ← ブラウザで動く合図。useState や onClick を使う画面に必要
 
-import { useState, type CSSProperties } from "react";
+import { useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import ResultCard from "./ResultCard";
 import StandardSearch from "./StandardSearch";
@@ -21,12 +21,16 @@ export default function Home() {
   const [priceMax, setPriceMax] = useState(PRICE_MAX); // 右端は上限なし
   const [results, setResults] = useState<Gift[] | null>(null);            // 検索結果
   const [error, setError] = useState("");                                 // つながらないときの文言
+  const searchVersion = useRef(0);
 
   async function searchStandard(condition: SearchCondition) {
+    const version = ++searchVersion.current;
     setError("");
     try {
-      setResults(await searchGifts(condition));
+      const gifts = await searchGifts(condition);
+      if (version === searchVersion.current) setResults(gifts);
     } catch (err) {
+      if (version !== searchVersion.current) return;
       setResults(null);
       setError(`APIにつながりません：${(err as Error).message}`);
     }
@@ -35,6 +39,7 @@ export default function Home() {
   // ② 検索ボタンの処理（API に聞くので、結果が返るまで待つ＝async/await）
   async function onSearch(e: React.FormEvent) {
     e.preventDefault(); // ページの再読み込みを止める
+    const version = ++searchVersion.current;
     setError("");
     const selectedCategories: string[] = [];
     const maxPrice = priceMax === PRICE_MAX ? undefined : priceMax;
@@ -45,8 +50,10 @@ export default function Home() {
     });
     const condition = { keyword: "", category: "", indivWrap, priceBand: "" };
     try {
-      setResults(await searchGifts({ ...condition, priceMin, priceMax: maxPrice }));
+      const gifts = await searchGifts({ ...condition, priceMin, priceMax: maxPrice });
+      if (version === searchVersion.current) setResults(gifts);
     } catch (err) {
+      if (version !== searchVersion.current) return;
       setResults(null);
       setError(`APIにつながりません：${(err as Error).message}`); // 原因はブラウザの Console に出る
     }
@@ -58,8 +65,8 @@ export default function Home() {
 
   // タブは通常検索の条件エリアと、取引先画面で共用する。
   const tabsContent = <nav className="modes">
-        <button type="button" className={mode === "standard" ? "on" : ""} onClick={() => { setMode("standard"); setResults(null); }}>いまの検索</button>
-        <button type="button" className={mode === "business" ? "on" : ""} onClick={() => { setMode("business"); setResults(null); }}>取引先へのお礼</button>
+        <button type="button" className={mode === "standard" ? "on" : ""} onClick={() => { searchVersion.current++; setMode("standard"); setResults(null); }}>いまの検索</button>
+        <button type="button" className={mode === "business" ? "on" : ""} onClick={() => { searchVersion.current++; setMode("business"); setResults(null); }}>取引先へのお礼</button>
       </nav>;
 
   // ③ 画面

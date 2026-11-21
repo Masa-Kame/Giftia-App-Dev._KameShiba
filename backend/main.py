@@ -8,6 +8,8 @@
 # 確認：http://localhost:8000/docs（Swagger UI。ブラウザから API を試せる）
 
 import os
+from datetime import date, timedelta
+from typing import Literal
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Query
@@ -21,6 +23,22 @@ from votes import router as votes_router
 load_dotenv()  # .env を読む（DB の接続情報・CORS の許可）
 
 app = FastAPI(title="Giftia Search API（2週目）")
+
+# 人気順だけに適用するデモ基準日。本番ではdate.today()等に切り替える。
+DEMO_REFERENCE_DATE = date(2026, 6, 30)
+BAYES_PRIOR_WEIGHT = 10
+
+
+def popularity_bounds(period: str) -> tuple[str, str] | None:
+    if period == "all":
+        return None
+    reference = DEMO_REFERENCE_DATE
+    starts = {
+        "weekly": reference - timedelta(days=6),
+        "monthly": reference.replace(day=1),
+        "yearly": reference.replace(month=1, day=1),
+    }
+    return starts[period].isoformat(), (reference + timedelta(days=1)).isoformat()
 
 # ── CORS ───────────────────────────────────────
 # 画面（http://localhost:3000）と API（http://localhost:8000）は別のアプリ＝オリジンが違う。
@@ -48,8 +66,10 @@ def search(
     price_min: int | None = Query(default=None, ge=0, description="価格の下限（以上）"),
     price_max: int | None = Query(default=None, ge=0, description="価格の上限（以下）"),
     limit: int = Query(default=20, ge=1, le=100, description="返す件数"),
+    sort: Literal["price_asc", "popular", "rating"] | None = Query(default=None, description="未指定は従来の販売数順"),
+    popularity_period: Literal["weekly", "monthly", "yearly", "all"] = Query(default="monthly", description="人気順の集計期間"),
 ):
-    """条件に合う商品を、人気順（直近1年の販売数）で上位 limit 件返す"""
+    """条件に合う商品を指定順で返す。sort未指定時は従来のsales_count順を維持する。"""
     # ① 条件を WHERE に1つずつ足す（値は %s で渡し、SQL の文字列に直接つなげない）
     where, params = ["stock > 0"], []  # 在庫切れは出さない
     for word in q.split():  # 【穴1】q を空白で区切って1語ずつにする（文字列のメソッド）
@@ -76,12 +96,50 @@ def search(
 
     # ② 件数と、人気順の上位 limit 件を取る
     total = fetch_all(f"SELECT COUNT(*) AS n FROM products WHERE {condition}", tuple(params))[0]["n"]
+    prefix, joins, sort_params = "", "", []
+    rating_order = """CASE WHEN COALESCE(review_stats.v, 0) > 0 THEN 0 ELSE 1 END ASC,
+            (1.0 * review_stats.rating_sum + %s * global_rating.average_c)
+                / (review_stats.v + %s) DESC,
+            COALESCE(review_stats.v, 0) DESC, p.product_id ASC"""
+    order_by = {
+        None: "p.sales_count DESC, p.product_id ASC",
+        "price_asc": f"p.price ASC, {rating_order}",
+        "popular": "COALESCE(popularity.sold_quantity, 0) DESC, p.product_id ASC",
+        "rating": rating_order,
+    }[sort]
+    if sort == "popular":
+        bounds = popularity_bounds(popularity_period)
+        period_condition = "WHERE o.ordered_at >= %s AND o.ordered_at < %s" if bounds else ""
+        sort_params.extend(bounds or ())
+        joins = f"""LEFT JOIN (
+            SELECT oi.product_id AS popularity_product_id, SUM(oi.quantity) AS sold_quantity
+            FROM order_items oi JOIN orders o ON o.order_id = oi.order_id
+            {period_condition}
+            GROUP BY oi.product_id
+        ) popularity ON popularity.popularity_product_id = p.product_id"""
+    elif sort in ("rating", "price_asc"):
+        # 商品テーブルの保存値を使わず、同じ有効口コミ集合からR・v・Cを計算する。
+        prefix = """WITH valid_reviews AS (
+            SELECT r.product_id AS reviewed_product_id, r.rating AS review_rating
+            FROM reviews r JOIN products existing ON existing.product_id = r.product_id
+            WHERE r.rating BETWEEN 1 AND 5
+        ), review_stats AS (
+            SELECT reviewed_product_id, COUNT(*) AS v, SUM(review_rating) AS rating_sum
+            FROM valid_reviews GROUP BY reviewed_product_id
+        ), global_rating AS (
+            SELECT AVG(1.0 * review_rating) AS average_c FROM valid_reviews
+        )"""
+        joins = """LEFT JOIN review_stats ON review_stats.reviewed_product_id = p.product_id
+            CROSS JOIN global_rating"""
+
+    ranking_params = (BAYES_PRIOR_WEIGHT, BAYES_PRIOR_WEIGHT) if sort in ("rating", "price_asc") else ()
     rows = fetch_all(
-        f"""SELECT product_id, category, brand, product_name, price, rating, review_count
-            FROM products WHERE {condition}
-            ORDER BY sales_count DESC, product_id
+        f"""{prefix} SELECT p.product_id, p.category, p.brand, p.product_name,
+                p.price, p.rating, p.review_count
+            FROM products p {joins} WHERE {condition}
+            ORDER BY {order_by}
             LIMIT %s""",
-        (*params, limit),
+        (*sort_params, *params, *ranking_params, limit),
     )
     # ③ DB の行を、画面の Gift 型（1週目）に詰め替えて返す
     return {"total": total, "results": [to_gift(r) for r in rows]}
