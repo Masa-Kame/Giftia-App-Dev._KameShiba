@@ -14,7 +14,7 @@ export type Gift = {
   reviewCount: number; // レビュー件数
 };
 
-// 画面から渡す検索条件（2つのタブの分をまとめて持つ）
+// 既存APIとの互換性を維持した検索条件。
 export type SearchSort = "popular" | "rating" | "price_asc";
 export type PopularityPeriod = "weekly" | "monthly" | "yearly" | "all";
 
@@ -28,6 +28,7 @@ export type SearchCondition = {
   priceMax?: number; // バーの上限（以下）。未指定は上限なし
   sort?: SearchSort;
   popularityPeriod?: PopularityPeriod;
+  scene?: string; // 実DBで同名のタグを確認したシーンのみ送信する。
 };
 
 // API の場所。NEXT_PUBLIC_ の値はブラウザに配られる＝秘密は置かない（.env.local に書く）
@@ -38,6 +39,7 @@ export async function searchGifts(c: SearchCondition): Promise<Gift[]> {
   // ① 条件を URL のクエリ（?q=...&category=...）に組み立てる。空の条件は送らない
   const params = new URLSearchParams();
   if (c.keyword) params.set("q", c.keyword);
+  if (c.scene) params.set("scene", c.scene);
   const categories = c.categories?.filter((value) => value !== "") ?? [];
   if (categories.length > 0) {
     categories.forEach((category) => params.append("categories", category));

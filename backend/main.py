@@ -68,6 +68,7 @@ def search(
     limit: int = Query(default=20, ge=1, le=100, description="返す件数"),
     sort: Literal["price_asc", "popular", "rating"] | None = Query(default=None, description="未指定は従来の販売数順"),
     popularity_period: Literal["weekly", "monthly", "yearly", "all"] = Query(default="monthly", description="人気順の集計期間"),
+    scene: Literal["", "送別", "誕生日", "母の日", "お歳暮", "お中元", "結婚祝い", "父の日", "出産祝い"] = Query(default="", description="実DBで同名タグを確認済みのシーン。未指定はすべて"),
 ):
     """条件に合う商品を指定順で返す。sort未指定時は従来のsales_count順を維持する。"""
     # ① 条件を WHERE に1つずつ足す（値は %s で渡し、SQL の文字列に直接つなげない）
@@ -92,10 +93,13 @@ def search(
     if price_max is not None:
         where.append("price <= %s")
         params.append(price_max)
+    if scene:
+        where.append("EXISTS (SELECT 1 FROM product_scenes ps WHERE ps.product_id = p.product_id AND ps.scene_tag = %s)")
+        params.append(scene)
     condition = " AND ".join(where)
 
     # ② 件数と、人気順の上位 limit 件を取る
-    total = fetch_all(f"SELECT COUNT(*) AS n FROM products WHERE {condition}", tuple(params))[0]["n"]
+    total = fetch_all(f"SELECT COUNT(*) AS n FROM products p WHERE {condition}", tuple(params))[0]["n"]
     prefix, joins, sort_params = "", "", []
     rating_order = """CASE WHEN COALESCE(review_stats.v, 0) > 0 THEN 0 ELSE 1 END ASC,
             (1.0 * review_stats.rating_sum + %s * global_rating.average_c)

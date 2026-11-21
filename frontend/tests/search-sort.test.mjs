@@ -49,9 +49,10 @@ function harness() {
   const { default: StandardSearch } = load("../app/StandardSearch.tsx", {
     react: hook.react, "@/lib/recommendationUi": load("../lib/recommendationUi.ts"),
   });
-  const render = () => { hook.reset(); return StandardSearch({ onSearch: api.searchGifts, headerContent: null, tabsContent: null }); };
+  let resetCount = 0;
+  const render = () => { hook.reset(); return StandardSearch({ onSearch: api.searchGifts, onModeChange: () => resetCount++, headerContent: null }); };
   const find = (predicate) => descendants(render()).find(predicate);
-  return { urls, api, find,
+  return { urls, api, find, resetCount: () => resetCount,
     submit: () => find((n) => n.type === "form").props.onSubmit({ preventDefault() {} }),
     select: (value) => find((n) => n.type === "select" && n.props.value === value),
   };
@@ -66,6 +67,7 @@ function text(node) {
 }
 const section = (h, name) => h.find((n) => n.type === "fieldset" && text(n.props.children[0]).startsWith(name));
 const tag = (h, name) => h.find((n) => n.type === "button" && n.props.className?.startsWith("preference-tag") && text(n).endsWith(name));
+const switchMode = (h, name) => h.find((n) => n.type === "button" && text(n) === name).props.onClick();
 
 test("条件順とシーン順を仕様どおりに表示する", () => {
   const h = harness();
@@ -78,6 +80,7 @@ test("条件順とシーン順を仕様どおりに表示する", () => {
 
 test("ギフトポリシーは対象シーンだけ表示し、単一選択・再クリック解除できる", () => {
   const h = harness();
+  switchMode(h, "おすすめ検索");
   assert.equal(section(h, "ギフトポリシー"), undefined);
   tag(h, "送別").props.onClick();
   assert.ok(section(h, "ギフトポリシー"));
@@ -95,6 +98,7 @@ test("ギフトポリシーは対象シーンだけ表示し、単一選択・�
 
 test("対象外シーン・シーン解除・条件クリアでポリシーを解除する", () => {
   const h = harness();
+  switchMode(h, "おすすめ検索");
   for (const reset of [() => tag(h, "誕生日").props.onClick(), () => tag(h, "送別").props.onClick(),
     () => h.find((n) => n.props?.className === "clear-filters").props.onClick()]) {
     tag(h, "送別").props.onClick();
@@ -120,7 +124,7 @@ test("おすすめ順の必須判定はシーンと対象シーンのポリシ�
 
 test("おすすめ順は準備中を維持し、必須不足・充足の双方でAPI送信しない", async () => {
   const h = harness();
-  h.select("popular").props.onChange({ target: { value: "recommended" } });
+  switchMode(h, "おすすめ検索");
   assert.equal(h.find((n) => n.props?.className === "search-submit").props.disabled, true);
   assert.match(text(h.find((n) => n.props?.id === "recommendation-guidance")), /シーン/);
   await h.submit(); assert.equal(h.urls.length, 0);
@@ -135,11 +139,10 @@ test("おすすめ順は準備中を維持し、必須不足・充足の双方�
 test("既存ソートはポリシー未選択でも検索可能で、未対応パラメーターを送信しない", async () => {
   for (const sort of ["popular", "rating", "price_asc"]) {
     const h = harness();
-    tag(h, "送別").props.onClick();
     h.select("popular").props.onChange({ target: { value: sort } });
     await h.submit();
     assert.equal(h.urls.length, 1);
-    tag(h, "王道").props.onClick();
+    assert.equal(section(h, "ギフトポリシー"), undefined);
     await h.submit();
     const params = h.urls.at(-1).searchParams;
     for (const key of ["scene", "gift_policy", "giftPolicy", "age", "gender", "preferences"]) assert.equal(params.has(key), false);
@@ -151,9 +154,8 @@ test("初期値は月間人気順、未対応ソートは選択不可", async ()
   const h = harness();
   assert.ok(h.select("popular"));
   assert.ok(h.select("monthly"));
-  for (const value of ["recommended", "newest"]) {
-    assert.equal(h.find((n) => n.type === "option" && n.props.value === value).props.disabled, true);
-  }
+  assert.equal(h.find((n) => n.type === "option" && n.props.value === "recommended"), undefined);
+  assert.equal(h.find((n) => n.type === "option" && n.props.value === "newest").props.disabled, true);
   await h.submit();
   assert.equal(h.urls[0].searchParams.get("sort"), "popular");
   assert.equal(h.urls[0].searchParams.get("popularity_period"), "monthly");
@@ -213,7 +215,7 @@ test("クリアで月間人気順へ戻り、自動再検索を止める", async
   assert.equal(h.urls.length, count);
 });
 
-test("旧API・取引先条件はsortを送信しない", async () => {
+test("旧APIの個包装・価格帯パラメーター互換性を維持する", async () => {
   const h = harness();
   await h.api.searchGifts({ keyword: "", category: "食品", indivWrap: true, priceBand: "3000" });
   const params = h.urls[0].searchParams;
@@ -240,4 +242,111 @@ test("検索結果を古い通信の結果で上書きしない", async () => {
   requests[1]([{ id: "new" }]); await newer;
   requests[0]([{ id: "old" }]); await older;
   assert.equal(descendants(render()).find((n) => n.type === ResultCard).props.gift.id, "new");
+});
+
+test("2モードの切り替えは入力条件を保持し、結果リセットを通知する", async () => {
+  const h = harness();
+  h.find((n) => n.props?.type === "search").props.onChange({ target: { value: "コーヒー" } });
+  tag(h, "送別").props.onClick();
+  h.find((n) => n.props?.name === "categories").props.onChange({ target: { checked: true } });
+  h.find((n) => n.props?.type === "range").props.onChange({ currentTarget: { value: "1500" } });
+  await h.submit();
+  switchMode(h, "おすすめ検索");
+  assert.equal(h.resetCount(), 1);
+  assert.equal(h.find((n) => n.props?.type === "search").props.value, "コーヒー");
+  assert.equal(tag(h, "送別").props["aria-pressed"], true);
+  assert.equal(h.find((n) => n.props?.name === "categories").props.checked, true);
+  assert.equal(h.find((n) => n.props?.type === "range").props.value, 1500);
+  tag(h, "王道").props.onClick();
+  switchMode(h, "シンプル検索");
+  assert.equal(section(h, "ギフトポリシー"), undefined);
+  const count = h.urls.length;
+  h.select("popular").props.onChange({ target: { value: "rating" } });
+  await settle();
+  assert.equal(h.urls.length, count); // モード変更前の検索条件では自動検索しない。
+  switchMode(h, "おすすめ検索");
+  assert.equal(tag(h, "王道").props["aria-pressed"], true);
+});
+
+test("未対応属性は両モードでUI選択でき、今後対応予定と案内する", async () => {
+  const h = harness();
+  for (const mode of ["シンプル検索", "おすすめ検索"]) {
+    switchMode(h, mode);
+    for (const name of ["贈る相手の年代", "贈る相手の性別", "好み"]) {
+      const field = section(h, name);
+      assert.notEqual(field.props.disabled, true);
+      assert.match(text(field.props.children[0]), /今後対応予定/);
+    }
+    for (const [name, value] of [["age", "30代"], ["gender", "女性"]]) {
+      h.find((n) => n.props?.name === name && n.props.value === value).props.onChange();
+      const input = h.find((n) => n.props?.name === name && n.props.value === value);
+      assert.equal(input.props.checked, true);
+      assert.match(h.find((n) => n.type === "label" && n.props.children?.[0]?.props?.name === name && n.props.children[0].props.value === value).props.className, /selected/);
+    }
+    const preference = () => h.find((n) => n.props?.name === "preferences" && n.props.value === "travel");
+    preference().props.onChange({ target: { checked: true } });
+    assert.equal(preference().props.checked, true);
+    assert.match(h.find((n) => n.type === "label" && n.props.children?.[0]?.props?.name === "preferences" && n.props.children[0].props.value === "travel").props.className, /selected/);
+  }
+  switchMode(h, "シンプル検索");
+  await h.submit();
+  for (const key of ["age", "gender", "preferences"]) assert.equal(h.urls.at(-1).searchParams.has(key), false);
+  h.find((n) => n.props?.className === "clear-filters").props.onClick();
+  assert.equal(h.find((n) => n.props?.name === "preferences" && n.props.value === "travel").props.checked, false);
+  for (const name of ["age", "gender"]) assert.equal(h.find((n) => n.props?.name === name && n.props.value === "指定なし").props.checked, true);
+});
+
+test("DB対応未確認のシーンを無視して検索しない", async () => {
+  const h = harness();
+  assert.equal(tag(h, "取引先へのお礼").props.disabled, true);
+  assert.equal(tag(h, "お祝い").props.disabled, true);
+  switchMode(h, "おすすめ検索");
+  tag(h, "取引先へのお礼").props.onClick();
+  switchMode(h, "シンプル検索");
+  assert.equal(h.find((n) => n.props?.className === "search-submit").props.disabled, true);
+  assert.match(text(h.find((n) => n.props?.id === "scene-verification-guidance")), /未確定/);
+  await h.submit(); assert.equal(h.urls.length, 0);
+  tag(h, "取引先へのお礼").props.onClick();
+  await h.submit(); assert.equal(h.urls.length, 1);
+});
+
+test("確認済み8シーンを同名で送信し、並び替えでも保持する", async () => {
+  for (const scene of ["送別", "誕生日", "母の日", "お歳暮", "お中元", "結婚祝い", "父の日", "出産祝い"]) {
+    const h = harness();
+    tag(h, scene).props.onClick();
+    await h.submit();
+    assert.equal(h.urls[0].searchParams.get("scene"), scene);
+    h.select("popular").props.onChange({ target: { value: "price_asc" } });
+    await settle();
+    assert.equal(h.urls.at(-1).searchParams.get("scene"), scene);
+    assert.equal(h.urls.at(-1).searchParams.get("sort"), "price_asc");
+  }
+});
+
+test("モード変更は結果・エラーを消去し、保留中の成功・失敗を無効化する", async () => {
+  const hook = hooks(), requests = [];
+  function StandardSearch() {}
+  function ResultCard() {}
+  const { default: Home } = load("../app/page.tsx", {
+    react: hook.react, "next/image": { default() {} },
+    "./StandardSearch": { default: StandardSearch }, "./ResultCard": { default: ResultCard },
+    "@/lib/api": { searchGifts: () => new Promise((resolve, reject) => requests.push({ resolve, reject })) },
+  });
+  const render = () => { hook.reset(); return Home(); };
+  const form = () => descendants(render()).find((n) => n.type === StandardSearch);
+  const first = form().props.onSearch({});
+  requests[0].resolve([{ id: "existing" }]); await first;
+  assert.ok(descendants(render()).find((n) => n.type === ResultCard));
+  const stale = form().props.onSearch({});
+  form().props.onModeChange();
+  assert.equal(descendants(render()).find((n) => n.type === ResultCard), undefined);
+  requests[1].resolve([{ id: "stale" }]); await stale;
+  assert.equal(descendants(render()).find((n) => n.type === ResultCard), undefined);
+  const failed = form().props.onSearch({});
+  requests[2].reject(new Error("failure")); await failed;
+  assert.ok(descendants(render()).find((n) => n.props?.role === "alert"));
+  const staleError = form().props.onSearch({});
+  form().props.onModeChange();
+  requests[3].reject(new Error("old failure")); await staleError;
+  assert.equal(descendants(render()).find((n) => n.props?.role === "alert"), undefined);
 });
