@@ -6,12 +6,13 @@ import { needsGiftPolicy, recommendationRequirement, type GiftPolicy } from "@/l
 
 const CATEGORIES = ["食品", "飲料", "コスメ", "インテリア", "カタログギフト", "ビジネス小物", "フラワー", "家電", "酒類", "生活雑貨"];
 const SCENES = ["送別", "取引先へのお礼", "誕生日", "お祝い", "母の日", "お歳暮", "お中元", "結婚祝い", "父の日", "出産祝い"];
+// giftia_t105の実データで同名タグを確認済み。「お礼」への読み替えはしない。
+const FILTERABLE_SCENES = new Set(["送別", "誕生日", "母の日", "お歳暮", "お中元", "結婚祝い", "父の日", "出産祝い"]);
 const GIFT_POLICIES: { value: GiftPolicy; label: string }[] = [
   { value: "classic", label: "王道" }, { value: "unique", label: "ユニーク" },
 ];
-type UiSearchSort = SearchSort | "recommended";
+type SearchMode = "simple" | "recommended";
 const SORTS = [
-  { value: "recommended", label: "おすすめ順（準備中）", disabled: true },
   { value: "popular", label: "人気順" },
   { value: "rating", label: "評価順" },
   { value: "price_asc", label: "価格の安い順" },
@@ -61,16 +62,17 @@ const ICON_PATHS: Record<string, string> = {
 function SearchIcon({ name }: { name: string }) {
   return <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={ICON_PATHS[name]} /></svg>;
 }
-export default function StandardSearch({ onSearch, headerContent, tabsContent }: {
+export default function StandardSearch({ onSearch, onModeChange, headerContent }: {
   onSearch: (condition: SearchCondition) => Promise<void>;
   headerContent: ReactNode;
-  tabsContent: ReactNode;
+  onModeChange: () => void;
 }) {
+  const [mode, setMode] = useState<SearchMode>("simple");
   const [keyword, setKeyword] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
   const [scene, setScene] = useState("");
   const [giftPolicy, setGiftPolicy] = useState<GiftPolicy>("");
-  const [sort, setSort] = useState<UiSearchSort>("popular");
+  const [sort, setSort] = useState<SearchSort>("popular");
   const [popularityPeriod, setPopularityPeriod] = useState<PopularityPeriod>("monthly");
   const lastSearch = useRef<SearchCondition | null>(null);
   const requestVersion = useRef(0);
@@ -83,6 +85,15 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
   const [gender, setGender] = useState("指定なし");
   const [age, setAge] = useState("指定なし");
   const [pending, setPending] = useState(false);
+
+  function changeMode(next: SearchMode) {
+    if (next === mode) return;
+    setMode(next);
+    requestVersion.current++;
+    lastSearch.current = null;
+    setPending(false);
+    onModeChange();
+  }
 
   function clear() {
     setKeyword(""); setCategories([]); setScene(""); setGiftPolicy(""); setSort("popular");
@@ -114,7 +125,10 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
   }
 
   const priceLabel = `${priceMin.toLocaleString("ja-JP")}円 〜 ${priceMax === PRICE_MAX ? "上限なし" : `${priceMax.toLocaleString("ja-JP")}円`}`;
-  const requiredInputMessage = recommendationRequirement(sort, scene, giftPolicy);
+  const requiredInputMessage = recommendationRequirement(mode, scene, giftPolicy);
+  // おすすめ検索から保持した未対応シーンを無視して検索しない。
+  const sceneVerificationMessage = mode === "simple" && scene && !FILTERABLE_SCENES.has(scene)
+    ? "選択中のシーンはDBとの対応が未確定です。選択を解除するか、対応済みのシーンを選んでください。" : "";
 
   function selectScene(value: string) {
     const nextScene = scene === value ? "" : value;
@@ -133,60 +147,62 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
     }
   }
 
-  function changeSort(value: UiSearchSort) {
+  function changeSort(value: SearchSort) {
     setSort(value);
-    if (value === "recommended") return; // STEP BでAPI接続するまで送信しない。
     if (lastSearch.current) void runSearch({ ...lastSearch.current, sort: value, popularityPeriod });
   }
 
   function changePeriod(value: PopularityPeriod) {
     setPopularityPeriod(value);
-    if (sort === "recommended") return;
     if (lastSearch.current) void runSearch({ ...lastSearch.current, sort, popularityPeriod: value });
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     // ボタン無効化だけに依存せず、Enterやプログラムからのsubmitも制御する。
-    if (requiredInputMessage || sort === "recommended") return;
+    if (mode === "recommended" || requiredInputMessage || sceneVerificationMessage) return;
     const maxPrice = priceMax === PRICE_MAX ? undefined : priceMax;
     console.log("検索条件", { keyword, categories, scene, giftPolicy, sort, popularityPeriod, priceMin,
       priceMax: maxPrice ?? null, preferences,
       preferenceLabels: PREFERENCES.filter(({ id }) => preferences.includes(id)).map(({ label }) => label),
       gender, age });
-    await runSearch({ keyword, category: "", categories,
+    await runSearch({ keyword, category: "", categories, scene,
       indivWrap: false, priceBand: "", priceMin, priceMax: maxPrice, sort, popularityPeriod });
   }
 
   return (
     <>
       <div className="search-sticky-header">
-        <div className="search-header-content">{headerContent}</div>
+        <div className="search-header-content">{headerContent}
+          <nav className="modes search-mode-tabs" aria-label="検索モード">
+            <button type="button" className={mode === "recommended" ? "on" : ""} aria-pressed={mode === "recommended"} onClick={() => changeMode("recommended")}>おすすめ検索</button>
+            <button type="button" className={mode === "simple" ? "on" : ""} aria-pressed={mode === "simple"} onClick={() => changeMode("simple")}>シンプル検索</button>
+          </nav>
+        </div>
         <div className="search-header-controls">
           <div className="search-actions">
-          <button className="search-submit" type="submit" form="standard-search-form" disabled={pending || !!requiredInputMessage || sort === "recommended"} aria-describedby={sort === "recommended" ? "recommendation-guidance" : undefined}><SearchIcon name="search" />{pending ? "検索中…" : "この条件で検索"}</button>
+          <button className="search-submit" type="submit" form="standard-search-form" disabled={pending || mode === "recommended" || !!sceneVerificationMessage} aria-describedby={mode === "recommended" ? "recommendation-guidance" : sceneVerificationMessage ? "scene-verification-guidance" : undefined}><SearchIcon name="search" />{mode === "recommended" ? "おすすめ検索は準備中" : pending ? "検索中…" : "この条件で検索"}</button>
           <button className="clear-filters" type="button" disabled={pending} onClick={clear}><SearchIcon name="reset" />条件をクリア</button>
           </div>
+          {mode === "simple" && <div className="search-sort-controls">
           <label className="sort-field"><span>並び替え</span>
-            <select value={sort} onChange={(e) => changeSort(e.target.value as UiSearchSort)}>
+            <select value={sort} onChange={(e) => changeSort(e.target.value as SearchSort)}>
               {SORTS.map(({ value, label, disabled }) => <option key={value} value={value} disabled={disabled}>{label}</option>)}
             </select>
           </label>
-          {sort === "recommended" && <p id="recommendation-guidance" className="tag-hint" role="status">{requiredInputMessage || "おすすめ順は準備中です。ランキング機能の公開後に検索できます。"}</p>}
-          {sort === "popular" && <>
-            <label className="sort-field"><span>集計期間</span>
-              <select value={popularityPeriod} onChange={(e) => changePeriod(e.target.value as PopularityPeriod)}>
-                {POPULARITY_PERIODS.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
-              </select>
-            </label>
-            <p className="tag-hint">人気順のデモ基準日：2026/06/30</p>
-          </>}
+          {sort === "popular" && <label className="sort-field"><span>集計期間</span>
+            <select value={popularityPeriod} onChange={(e) => changePeriod(e.target.value as PopularityPeriod)}>
+              {POPULARITY_PERIODS.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+            </select>
+          </label>}
+          </div>}
+          {mode === "recommended" && <p id="recommendation-guidance" className="tag-hint" role="status">{requiredInputMessage || "おすすめ検索は準備中です。ランキング機能の公開後に検索できます。"}</p>}
+          {sceneVerificationMessage && <p id="scene-verification-guidance" className="tag-hint" role="status">{sceneVerificationMessage}</p>}
         </div>
       </div>
     <form id="standard-search-form" className="standard-search" onSubmit={submit}>
       <div className="search-condition-intro">
-        {tabsContent}
-        <p className="search-intro">いまの Giftia の検索（キーワード・カテゴリー・価格帯で探す）</p>
+        <p className="search-intro">{mode === "simple" ? "条件に合う商品を絞り込み、比較するシンプル検索" : "贈り物選びをサポートするおすすめ検索（準備中）"}</p>
       </div>
       <label className="keyword-field">
         <span className="visually-hidden">キーワード</span>
@@ -195,23 +211,23 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
       </label>
 
       <fieldset className="tag-section">
-        <legend className="field-caption">シーン（1つ選択）</legend>
-        <div className="preference-tags">{SCENES.map((value) => <button type="button" className={`preference-tag${scene === value ? " selected" : ""}`} key={value} aria-pressed={scene === value} onClick={() => selectScene(value)}>
+        <legend className="field-caption">シーン（1つ選択）{mode === "recommended" && <span className="field-hint">必須</span>}</legend>
+        <div className="preference-tags">{SCENES.map((value) => <button type="button" className={`preference-tag${scene === value ? " selected" : ""}`} key={value} disabled={mode === "simple" && !FILTERABLE_SCENES.has(value) && scene !== value} aria-pressed={scene === value} onClick={() => selectScene(value)}>
           <span aria-hidden="true">#</span>{value}
         </button>)}</div>
-        <p className="tag-hint">選択中のタグを押すと解除できます。今後のおすすめ順ではシーンが必須になります。現在、シーンは検索結果に反映されません。</p>
+        <p className="tag-hint">選択中のタグを押すと解除できます。シンプル検索では同名タグで商品を絞り込みます。「取引先へのお礼」「お祝い」はDBとの対応が未確定のため、新たに選択できません。おすすめ検索では選択できますが、検索実行は準備中です。</p>
       </fieldset>
 
-      {needsGiftPolicy(scene) && <fieldset className="tag-section">
-        <legend className="field-caption">ギフトポリシー <span className="field-hint">（1つ選択）</span></legend>
+      {mode === "recommended" && needsGiftPolicy(scene) && <fieldset className="tag-section">
+        <legend className="field-caption">ギフトポリシー <span className="field-hint">（1つ選択・必須）</span></legend>
         <div className="preference-tags">{GIFT_POLICIES.map(({ value, label }) => <button type="button" className={`preference-tag${giftPolicy === value ? " selected" : ""}`} key={value} aria-pressed={giftPolicy === value} onClick={() => setGiftPolicy((current) => current === value ? "" : value)}>
           <span aria-hidden="true">#</span>{label}
         </button>)}</div>
-        <p className="tag-hint">おすすめ順でのみ必須になる予定です。現在は選択内容の確認のみで、検索結果には反映されません。</p>
+        <p className="tag-hint">おすすめ検索専用です。データ未整備のため、現在ランキングには反映されません。</p>
       </fieldset>}
 
       <fieldset className="tag-section">
-        <legend className="field-caption">贈る相手の年代 <span className="field-hint">（1つ選択）</span></legend>
+        <legend className="field-caption">贈る相手の年代 <span className="field-hint">（今後対応予定）</span></legend>
         <div className="preference-tags">{AGES.map((value) => <label className={`preference-tag${age === value ? " selected" : ""}`} key={value}>
           <input type="radio" name="age" value={value} checked={age === value} onChange={() => setAge(value)} />
           <span aria-hidden="true">#</span>{value}
@@ -219,7 +235,7 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
       </fieldset>
 
       <fieldset className="tag-section">
-        <legend className="field-caption">贈る相手の性別 <span className="field-hint">（1つ選択）</span></legend>
+        <legend className="field-caption">贈る相手の性別 <span className="field-hint">（今後対応予定）</span></legend>
         <div className="preference-tags">{GENDERS.map((value) => <label className={`preference-tag${gender === value ? " selected" : ""}`} key={value}>
           <input type="radio" name="gender" value={value} checked={gender === value} onChange={() => setGender(value)} />
           <span aria-hidden="true">#</span>{value}
@@ -241,7 +257,7 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
       </fieldset>
 
       <fieldset className="preference-field">
-        <legend className="field-caption">好み <span className="field-hint">（複数選択可）</span> <span className="preference-count" role="status">{preferences.length}件選択中</span></legend>
+        <legend className="field-caption">好み <span className="field-hint">（今後対応予定）</span> <span className="preference-count" role="status">{preferences.length}件選択中</span></legend>
         <div id="preference-options" className="preference-tags">{(preferencesExpanded ? PREFERENCES : PREFERENCES.slice(0, INITIAL_PREFERENCE_COUNT)).map(({ id, label }) => <label className={`preference-tag${preferences.includes(id) ? " selected" : ""}`} key={id}>
           <input type="checkbox" name="preferences" value={id} checked={preferences.includes(id)} onChange={(e) => {
             const checked = e.target.checked;
@@ -284,7 +300,7 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
         </div>
       </fieldset>
 
-      <p className="development-note"><strong>開発中：</strong>シーン・ギフトポリシー・好み・性別・年代は検索結果に反映されません。おすすめ順・新着順は準備中です。評価順は口コミ数を考慮した補正評価で並び替えます。並び替え・期間変更時は直前に検索した条件を使用します。</p>
+      <p className="development-note"><strong>開発中：</strong>年代・性別・好みはUIで選択できますが、検索結果への反映は今後対応予定です。ギフトポリシーのデータも未整備です。おすすめ検索・新着順は準備中で、おすすめランキング・理由表示は行いません。評価順は口コミ数を考慮した補正評価を使用します。並び替え・期間変更では直前に検索した条件を使用します。</p>
     </form>
     </>
   );

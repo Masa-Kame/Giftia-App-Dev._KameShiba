@@ -35,6 +35,11 @@ class SearchApiTests(unittest.TestCase):
             ],
         )
         self.queries = []
+        self.db.execute("CREATE TABLE product_scenes (product_id TEXT, scene_tag TEXT)")
+        self.db.executemany("INSERT INTO product_scenes VALUES (?, ?)", [
+            ("G1", "送別"), ("G1", "送別"), ("G2", "誕生日"),
+            ("G4", "送別"), ("G5", "送別"), ("G2", "お礼"),
+        ])
 
         def fetch_all(query, params=()):
             self.queries.append((query, params))
@@ -66,7 +71,7 @@ class SearchApiTests(unittest.TestCase):
         data = response.json()
         count_sql, count_params = self.queries[0]
         rows_sql, rows_params = self.queries[1]
-        self.assertEqual(count_sql.split(" WHERE ")[1], rows_sql.split(" WHERE ")[1].split("\n")[0])
+        self.assertEqual(count_sql.split(" WHERE ", 1)[1], rows_sql.split(" WHERE ", 1)[1].split("\n")[0])
         self.assertEqual(count_params, rows_params[:-1])
         return data
 
@@ -133,6 +138,30 @@ class SearchApiTests(unittest.TestCase):
         self.assertNotIn(value, self.queries[0][0])
         self.assertEqual(self.queries[0][1], (value,))
 
+    def test_scene_exists_does_not_duplicate_products(self):
+        data = self.search({"scene": "送別"})
+        self.assertEqual(data["total"], 2)
+        self.assertEqual(self.ids(data), ["G1", "G5"])
+        self.assertIn("EXISTS (SELECT 1 FROM product_scenes", self.queries[0][0])
+        self.assertEqual(self.queries[0][1], ("送別",))
+
+    def test_scene_with_keyword_categories_price_and_limit(self):
+        data = self.search([("scene", "送別"), ("q", "送別"), ("categories", "食品"),
+                            ("categories", "飲料"), ("price_min", 500), ("price_max", 4000), ("limit", 1)])
+        self.assertEqual(data["total"], 1)
+        self.assertEqual(self.ids(data), ["G1"])
+        self.assertEqual(self.search({"scene": "送別", "limit": 1})["total"], 2)
+
+    def test_scene_empty_and_no_match(self):
+        self.assertEqual(self.search({"scene": ""})["total"], 4)
+        self.assertEqual(self.search({"scene": "出産祝い"})["results"], [])
+
+    def test_unmapped_and_invalid_scene_rejected(self):
+        for scene in ("取引先へのお礼", "お祝い", "お礼", "送別' OR 1=1 --"):
+            self.queries.clear()
+            self.assertEqual(self.client.get("/api/search", params={"scene": scene}).status_code, 422)
+            self.assertEqual(self.queries, [])
+
 
 class SearchSortTests(unittest.TestCase):
     """既存12件とは別に、実際の生成SQLをインメモリDBで検証する。"""
@@ -177,6 +206,18 @@ class SearchSortTests(unittest.TestCase):
     def test_price_sort_and_id_tie(self):
         self.db.execute("UPDATE products SET price = 3000 WHERE product_id = 'G5'")
         self.assertEqual(self.ids(self.request("price_asc")), ["G1", "G2", "G5", "G3"])
+
+    def test_scene_filter_combines_with_all_sorts(self):
+        for sort in ("price_asc", "rating", "popular"):
+            data = self.request(sort, scene="送別", price_min=500)
+            self.assertEqual(data["total"], 2)
+            self.assertEqual(set(self.ids(data)), {"G1", "G5"})
+            count_sql, count_params = self.queries[0]
+            rows_sql, rows_params = self.queries[1]
+            self.assertIn("EXISTS (SELECT 1 FROM product_scenes", count_sql)
+            self.assertIn("EXISTS (SELECT 1 FROM product_scenes", rows_sql)
+            self.assertIn("送別", count_params)
+            self.assertIn("送別", rows_params)
 
     def test_price_sort_uses_bayesian_score_for_equal_prices(self):
         self.rating_fixture()
