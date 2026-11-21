@@ -15,6 +15,9 @@ export type Gift = {
 };
 
 // 画面から渡す検索条件（2つのタブの分をまとめて持つ）
+export type SearchSort = "popular" | "rating" | "price_asc";
+export type PopularityPeriod = "weekly" | "monthly" | "yearly" | "all";
+
 export type SearchCondition = {
   keyword: string;    // いまの検索：キーワード
   category: string;   // いまの検索：カテゴリー（空ならすべて）
@@ -23,6 +26,8 @@ export type SearchCondition = {
   priceBand: string;  // 取引先へのお礼："" | "3000" | "5000"
   priceMin?: number; // バーの下限（以上）
   priceMax?: number; // バーの上限（以下）。未指定は上限なし
+  sort?: SearchSort;
+  popularityPeriod?: PopularityPeriod;
 };
 
 // API の場所。NEXT_PUBLIC_ の値はブラウザに配られる＝秘密は置かない（.env.local に書く）
@@ -44,6 +49,8 @@ export async function searchGifts(c: SearchCondition): Promise<Gift[]> {
   if (c.priceBand === "5000") { params.set("price_min", "5000"); params.set("price_max", "9999"); } // 5,000以上 10,000未満
   if (c.priceMin !== undefined) params.set("price_min", String(c.priceMin));
   if (c.priceMax !== undefined) params.set("price_max", String(c.priceMax));
+  if (c.sort) params.set("sort", c.sort);
+  if (c.sort === "popular" && c.popularityPeriod) params.set("popularity_period", c.popularityPeriod);
 
   // ② fetch で API を呼ぶ（通信が終わるまで待つ＝await）
   const res = await fetch(`${API}/api/search?${params.toString()}`);

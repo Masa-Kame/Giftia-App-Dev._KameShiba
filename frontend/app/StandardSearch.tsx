@@ -1,11 +1,21 @@
 "use client";
 
-import { useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
-import type { SearchCondition } from "@/lib/api";
+import { useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
+import type { SearchCondition, SearchSort, PopularityPeriod } from "@/lib/api";
 
 const CATEGORIES = ["食品", "飲料", "コスメ", "インテリア", "カタログギフト", "ビジネス小物", "フラワー", "家電", "酒類", "生活雑貨"];
 const SCENES = ["送別", "誕生日", "お祝い", "取引先へのお礼", "母の日", "お歳暮", "お中元", "結婚祝い", "父の日", "出産祝い"];
-const SORTS = ["おすすめ順", "人気順", "評価順", "価格の安い順", "新着順"];
+const SORTS = [
+  { value: "recommended", label: "おすすめ順（準備中）", disabled: true },
+  { value: "popular", label: "人気順" },
+  { value: "rating", label: "評価順" },
+  { value: "price_asc", label: "価格の安い順" },
+  { value: "newest", label: "新着順（準備中）", disabled: true },
+];
+const POPULARITY_PERIODS: { value: PopularityPeriod; label: string }[] = [
+  { value: "weekly", label: "週間" }, { value: "monthly", label: "月間" },
+  { value: "yearly", label: "年間" }, { value: "all", label: "全期間" },
+];
 // IDは表示名から分離したUI用の識別子。将来の好みマスタとの対応に使用する。
 const PREFERENCES = [
   { id: "travel", label: "旅行好き" },
@@ -54,7 +64,10 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
   const [keyword, setKeyword] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
   const [scene, setScene] = useState("");
-  const [sort, setSort] = useState("人気順");
+  const [sort, setSort] = useState<SearchSort>("popular");
+  const [popularityPeriod, setPopularityPeriod] = useState<PopularityPeriod>("monthly");
+  const lastSearch = useRef<SearchCondition | null>(null);
+  const requestVersion = useRef(0);
   const [priceMin, setPriceMin] = useState(PRICE_MIN);
   const [priceMax, setPriceMax] = useState(PRICE_MAX);
   const [minPriceDraft, setMinPriceDraft] = useState<string | null>(null);
@@ -66,7 +79,8 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
   const [pending, setPending] = useState(false);
 
   function clear() {
-    setKeyword(""); setCategories([]); setScene(""); setSort("人気順");
+    setKeyword(""); setCategories([]); setScene(""); setSort("popular");
+    setPopularityPeriod("monthly"); lastSearch.current = null;
     setPriceMin(PRICE_MIN); setPriceMax(PRICE_MAX); setPreferences([]);
     setMinPriceDraft(null); setMaxPriceDraft(null);
     setPreferencesExpanded(false);
@@ -95,21 +109,36 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
 
   const priceLabel = `${priceMin.toLocaleString("ja-JP")}円 〜 ${priceMax === PRICE_MAX ? "上限なし" : `${priceMax.toLocaleString("ja-JP")}円`}`;
 
+  async function runSearch(condition: SearchCondition) {
+    const version = ++requestVersion.current;
+    lastSearch.current = condition;
+    setPending(true);
+    try {
+      await onSearch(condition);
+    } finally {
+      if (version === requestVersion.current) setPending(false);
+    }
+  }
+
+  function changeSort(value: SearchSort) {
+    setSort(value);
+    if (lastSearch.current) void runSearch({ ...lastSearch.current, sort: value, popularityPeriod });
+  }
+
+  function changePeriod(value: PopularityPeriod) {
+    setPopularityPeriod(value);
+    if (lastSearch.current) void runSearch({ ...lastSearch.current, sort, popularityPeriod: value });
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const maxPrice = priceMax === PRICE_MAX ? undefined : priceMax;
-    console.log("検索条件", { keyword, categories, scene, sort, priceMin,
+    console.log("検索条件", { keyword, categories, scene, sort, popularityPeriod, priceMin,
       priceMax: maxPrice ?? null, preferences,
       preferenceLabels: PREFERENCES.filter(({ id }) => preferences.includes(id)).map(({ label }) => label),
       gender, age });
-    setPending(true);
-    try {
-      // 未対応条件は送らず、既存のAPI契約を維持する。
-      await onSearch({ keyword, category: "", categories,
-        indivWrap: false, priceBand: "", priceMin, priceMax: maxPrice });
-    } finally {
-      setPending(false);
-    }
+    await runSearch({ keyword, category: "", categories,
+      indivWrap: false, priceBand: "", priceMin, priceMax: maxPrice, sort, popularityPeriod });
   }
 
   return (
@@ -122,10 +151,18 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
           <button className="clear-filters" type="button" disabled={pending} onClick={clear}><SearchIcon name="reset" />条件をクリア</button>
           </div>
           <label className="sort-field"><span>並び替え</span>
-            <select value={sort} onChange={(e) => setSort(e.target.value)}>
-              {SORTS.map((value) => <option key={value}>{value}</option>)}
+            <select value={sort} onChange={(e) => changeSort(e.target.value as SearchSort)}>
+              {SORTS.map(({ value, label, disabled }) => <option key={value} value={value} disabled={disabled}>{label}</option>)}
             </select>
           </label>
+          {sort === "popular" && <>
+            <label className="sort-field"><span>集計期間</span>
+              <select value={popularityPeriod} onChange={(e) => changePeriod(e.target.value as PopularityPeriod)}>
+                {POPULARITY_PERIODS.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+              </select>
+            </label>
+            <p className="tag-hint">人気順のデモ基準日：2026/06/30</p>
+          </>}
         </div>
       </div>
     <form id="standard-search-form" className="standard-search" onSubmit={submit}>
@@ -221,7 +258,7 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
         </label>)}</div>
       </fieldset>
 
-      <p className="development-note"><strong>開発中：</strong>シーン・好み・性別・年代・並び替えは選択内容の確認のみで、検索結果には反映されません。結果は人気順です。カテゴリーは選択したいずれかに該当する商品が対象です。</p>
+      <p className="development-note"><strong>開発中：</strong>シーン・好み・性別・年代は検索結果に反映されません。おすすめ順・新着順は準備中です。評価順は口コミ数を考慮した補正評価で並び替えます。並び替え・期間変更時は直前に検索した条件を使用します。</p>
     </form>
     </>
   );
