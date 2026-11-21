@@ -46,7 +46,9 @@ function harness() {
   const api = load("../lib/api.ts", {}, {
     fetch: async (url) => { urls.push(new URL(url)); return { ok: true, json: async () => ({ total: 0, results: [] }) }; },
   });
-  const { default: StandardSearch } = load("../app/StandardSearch.tsx", { react: hook.react });
+  const { default: StandardSearch } = load("../app/StandardSearch.tsx", {
+    react: hook.react, "@/lib/recommendationUi": load("../lib/recommendationUi.ts"),
+  });
   const render = () => { hook.reset(); return StandardSearch({ onSearch: api.searchGifts, headerContent: null, tabsContent: null }); };
   const find = (predicate) => descendants(render()).find(predicate);
   return { urls, api, find,
@@ -55,6 +57,95 @@ function harness() {
   };
 }
 const settle = () => new Promise((resolve) => setImmediate(resolve));
+
+function text(node) {
+  if (node == null || typeof node === "boolean") return "";
+  if (typeof node !== "object") return String(node);
+  if (Array.isArray(node)) return node.map(text).join("");
+  return text(node.props?.children);
+}
+const section = (h, name) => h.find((n) => n.type === "fieldset" && text(n.props.children[0]).startsWith(name));
+const tag = (h, name) => h.find((n) => n.type === "button" && n.props.className?.startsWith("preference-tag") && text(n).endsWith(name));
+
+test("条件順とシーン順を仕様どおりに表示する", () => {
+  const h = harness();
+  const sections = h.find((n) => n.type === "form").props.children.filter((n) => n?.type === "fieldset");
+  assert.deepEqual(Array.from(sections).map((n) => text(n.props.children[0]).split(/[（ ]/)[0]),
+    ["シーン", "贈る相手の年代", "贈る相手の性別", "カテゴリー", "好み", "価格帯"]);
+  const scenes = descendants(section(h, "シーン")).filter((n) => n.type === "button").map((n) => n.props.children.at(-1));
+  assert.deepEqual(scenes, ["送別", "取引先へのお礼", "誕生日", "お祝い", "母の日", "お歳暮", "お中元", "結婚祝い", "父の日", "出産祝い"]);
+});
+
+test("ギフトポリシーは対象シーンだけ表示し、単一選択・再クリック解除できる", () => {
+  const h = harness();
+  assert.equal(section(h, "ギフトポリシー"), undefined);
+  tag(h, "送別").props.onClick();
+  assert.ok(section(h, "ギフトポリシー"));
+  assert.equal(tag(h, "王道").props["aria-pressed"], false);
+  tag(h, "王道").props.onClick();
+  assert.equal(tag(h, "王道").props["aria-pressed"], true);
+  tag(h, "ユニーク").props.onClick();
+  assert.equal(tag(h, "王道").props["aria-pressed"], false);
+  assert.equal(tag(h, "ユニーク").props["aria-pressed"], true);
+  tag(h, "ユニーク").props.onClick();
+  assert.equal(tag(h, "ユニーク").props["aria-pressed"], false);
+  tag(h, "取引先へのお礼").props.onClick();
+  assert.ok(section(h, "ギフトポリシー"));
+});
+
+test("対象外シーン・シーン解除・条件クリアでポリシーを解除する", () => {
+  const h = harness();
+  for (const reset of [() => tag(h, "誕生日").props.onClick(), () => tag(h, "送別").props.onClick(),
+    () => h.find((n) => n.props?.className === "clear-filters").props.onClick()]) {
+    tag(h, "送別").props.onClick();
+    tag(h, "王道").props.onClick();
+    reset();
+    assert.equal(section(h, "ギフトポリシー"), undefined);
+    tag(h, "送別").props.onClick();
+    assert.equal(tag(h, "王道").props["aria-pressed"], false);
+    tag(h, "送別").props.onClick();
+  }
+});
+
+test("おすすめ順の必須判定はシーンと対象シーンのポリシーだけ", () => {
+  const { recommendationRequirement } = load("../lib/recommendationUi.ts");
+  assert.match(recommendationRequirement("recommended", "", ""), /シーン/);
+  for (const scene of ["送別", "取引先へのお礼"]) {
+    assert.match(recommendationRequirement("recommended", scene, ""), /ギフトポリシー/);
+    for (const policy of ["classic", "unique"]) assert.equal(recommendationRequirement("recommended", scene, policy), "");
+  }
+  assert.equal(recommendationRequirement("recommended", "誕生日", ""), "");
+  for (const sort of ["popular", "rating", "price_asc"]) assert.equal(recommendationRequirement(sort, "", ""), "");
+});
+
+test("おすすめ順は準備中を維持し、必須不足・充足の双方でAPI送信しない", async () => {
+  const h = harness();
+  h.select("popular").props.onChange({ target: { value: "recommended" } });
+  assert.equal(h.find((n) => n.props?.className === "search-submit").props.disabled, true);
+  assert.match(text(h.find((n) => n.props?.id === "recommendation-guidance")), /シーン/);
+  await h.submit(); assert.equal(h.urls.length, 0);
+  tag(h, "送別").props.onClick();
+  assert.match(text(h.find((n) => n.props?.id === "recommendation-guidance")), /ギフトポリシー/);
+  await h.submit(); assert.equal(h.urls.length, 0);
+  tag(h, "王道").props.onClick();
+  assert.match(text(h.find((n) => n.props?.id === "recommendation-guidance")), /準備中/);
+  await h.submit(); assert.equal(h.urls.length, 0);
+});
+
+test("既存ソートはポリシー未選択でも検索可能で、未対応パラメーターを送信しない", async () => {
+  for (const sort of ["popular", "rating", "price_asc"]) {
+    const h = harness();
+    tag(h, "送別").props.onClick();
+    h.select("popular").props.onChange({ target: { value: sort } });
+    await h.submit();
+    assert.equal(h.urls.length, 1);
+    tag(h, "王道").props.onClick();
+    await h.submit();
+    const params = h.urls.at(-1).searchParams;
+    for (const key of ["scene", "gift_policy", "giftPolicy", "age", "gender", "preferences"]) assert.equal(params.has(key), false);
+    assert.equal(params.get("sort"), sort);
+  }
+});
 
 test("初期値は月間人気順、未対応ソートは選択不可", async () => {
   const h = harness();

@@ -2,9 +2,14 @@
 
 import { useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import type { SearchCondition, SearchSort, PopularityPeriod } from "@/lib/api";
+import { needsGiftPolicy, recommendationRequirement, type GiftPolicy } from "@/lib/recommendationUi";
 
 const CATEGORIES = ["食品", "飲料", "コスメ", "インテリア", "カタログギフト", "ビジネス小物", "フラワー", "家電", "酒類", "生活雑貨"];
-const SCENES = ["送別", "誕生日", "お祝い", "取引先へのお礼", "母の日", "お歳暮", "お中元", "結婚祝い", "父の日", "出産祝い"];
+const SCENES = ["送別", "取引先へのお礼", "誕生日", "お祝い", "母の日", "お歳暮", "お中元", "結婚祝い", "父の日", "出産祝い"];
+const GIFT_POLICIES: { value: GiftPolicy; label: string }[] = [
+  { value: "classic", label: "王道" }, { value: "unique", label: "ユニーク" },
+];
+type UiSearchSort = SearchSort | "recommended";
 const SORTS = [
   { value: "recommended", label: "おすすめ順（準備中）", disabled: true },
   { value: "popular", label: "人気順" },
@@ -64,7 +69,8 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
   const [keyword, setKeyword] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
   const [scene, setScene] = useState("");
-  const [sort, setSort] = useState<SearchSort>("popular");
+  const [giftPolicy, setGiftPolicy] = useState<GiftPolicy>("");
+  const [sort, setSort] = useState<UiSearchSort>("popular");
   const [popularityPeriod, setPopularityPeriod] = useState<PopularityPeriod>("monthly");
   const lastSearch = useRef<SearchCondition | null>(null);
   const requestVersion = useRef(0);
@@ -79,7 +85,7 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
   const [pending, setPending] = useState(false);
 
   function clear() {
-    setKeyword(""); setCategories([]); setScene(""); setSort("popular");
+    setKeyword(""); setCategories([]); setScene(""); setGiftPolicy(""); setSort("popular");
     setPopularityPeriod("monthly"); lastSearch.current = null;
     setPriceMin(PRICE_MIN); setPriceMax(PRICE_MAX); setPreferences([]);
     setMinPriceDraft(null); setMaxPriceDraft(null);
@@ -108,6 +114,13 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
   }
 
   const priceLabel = `${priceMin.toLocaleString("ja-JP")}円 〜 ${priceMax === PRICE_MAX ? "上限なし" : `${priceMax.toLocaleString("ja-JP")}円`}`;
+  const requiredInputMessage = recommendationRequirement(sort, scene, giftPolicy);
+
+  function selectScene(value: string) {
+    const nextScene = scene === value ? "" : value;
+    setScene(nextScene);
+    if (!needsGiftPolicy(nextScene)) setGiftPolicy("");
+  }
 
   async function runSearch(condition: SearchCondition) {
     const version = ++requestVersion.current;
@@ -120,20 +133,24 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
     }
   }
 
-  function changeSort(value: SearchSort) {
+  function changeSort(value: UiSearchSort) {
     setSort(value);
+    if (value === "recommended") return; // STEP BでAPI接続するまで送信しない。
     if (lastSearch.current) void runSearch({ ...lastSearch.current, sort: value, popularityPeriod });
   }
 
   function changePeriod(value: PopularityPeriod) {
     setPopularityPeriod(value);
+    if (sort === "recommended") return;
     if (lastSearch.current) void runSearch({ ...lastSearch.current, sort, popularityPeriod: value });
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    // ボタン無効化だけに依存せず、Enterやプログラムからのsubmitも制御する。
+    if (requiredInputMessage || sort === "recommended") return;
     const maxPrice = priceMax === PRICE_MAX ? undefined : priceMax;
-    console.log("検索条件", { keyword, categories, scene, sort, popularityPeriod, priceMin,
+    console.log("検索条件", { keyword, categories, scene, giftPolicy, sort, popularityPeriod, priceMin,
       priceMax: maxPrice ?? null, preferences,
       preferenceLabels: PREFERENCES.filter(({ id }) => preferences.includes(id)).map(({ label }) => label),
       gender, age });
@@ -147,14 +164,15 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
         <div className="search-header-content">{headerContent}</div>
         <div className="search-header-controls">
           <div className="search-actions">
-          <button className="search-submit" type="submit" form="standard-search-form" disabled={pending}><SearchIcon name="search" />{pending ? "検索中…" : "この条件で検索"}</button>
+          <button className="search-submit" type="submit" form="standard-search-form" disabled={pending || !!requiredInputMessage || sort === "recommended"} aria-describedby={sort === "recommended" ? "recommendation-guidance" : undefined}><SearchIcon name="search" />{pending ? "検索中…" : "この条件で検索"}</button>
           <button className="clear-filters" type="button" disabled={pending} onClick={clear}><SearchIcon name="reset" />条件をクリア</button>
           </div>
           <label className="sort-field"><span>並び替え</span>
-            <select value={sort} onChange={(e) => changeSort(e.target.value as SearchSort)}>
+            <select value={sort} onChange={(e) => changeSort(e.target.value as UiSearchSort)}>
               {SORTS.map(({ value, label, disabled }) => <option key={value} value={value} disabled={disabled}>{label}</option>)}
             </select>
           </label>
+          {sort === "recommended" && <p id="recommendation-guidance" className="tag-hint" role="status">{requiredInputMessage || "おすすめ順は準備中です。ランキング機能の公開後に検索できます。"}</p>}
           {sort === "popular" && <>
             <label className="sort-field"><span>集計期間</span>
               <select value={popularityPeriod} onChange={(e) => changePeriod(e.target.value as PopularityPeriod)}>
@@ -178,10 +196,34 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
 
       <fieldset className="tag-section">
         <legend className="field-caption">シーン（1つ選択）</legend>
-        <div className="preference-tags">{SCENES.map((value) => <button type="button" className={`preference-tag${scene === value ? " selected" : ""}`} key={value} aria-pressed={scene === value} onClick={() => setScene((current) => current === value ? "" : value)}>
+        <div className="preference-tags">{SCENES.map((value) => <button type="button" className={`preference-tag${scene === value ? " selected" : ""}`} key={value} aria-pressed={scene === value} onClick={() => selectScene(value)}>
           <span aria-hidden="true">#</span>{value}
         </button>)}</div>
-        <p className="tag-hint">未選択の場合はすべてのシーンが対象です。選択中のタグを押すと解除できます。</p>
+        <p className="tag-hint">選択中のタグを押すと解除できます。今後のおすすめ順ではシーンが必須になります。現在、シーンは検索結果に反映されません。</p>
+      </fieldset>
+
+      {needsGiftPolicy(scene) && <fieldset className="tag-section">
+        <legend className="field-caption">ギフトポリシー <span className="field-hint">（1つ選択）</span></legend>
+        <div className="preference-tags">{GIFT_POLICIES.map(({ value, label }) => <button type="button" className={`preference-tag${giftPolicy === value ? " selected" : ""}`} key={value} aria-pressed={giftPolicy === value} onClick={() => setGiftPolicy((current) => current === value ? "" : value)}>
+          <span aria-hidden="true">#</span>{label}
+        </button>)}</div>
+        <p className="tag-hint">おすすめ順でのみ必須になる予定です。現在は選択内容の確認のみで、検索結果には反映されません。</p>
+      </fieldset>}
+
+      <fieldset className="tag-section">
+        <legend className="field-caption">贈る相手の年代 <span className="field-hint">（1つ選択）</span></legend>
+        <div className="preference-tags">{AGES.map((value) => <label className={`preference-tag${age === value ? " selected" : ""}`} key={value}>
+          <input type="radio" name="age" value={value} checked={age === value} onChange={() => setAge(value)} />
+          <span aria-hidden="true">#</span>{value}
+        </label>)}</div>
+      </fieldset>
+
+      <fieldset className="tag-section">
+        <legend className="field-caption">贈る相手の性別 <span className="field-hint">（1つ選択）</span></legend>
+        <div className="preference-tags">{GENDERS.map((value) => <label className={`preference-tag${gender === value ? " selected" : ""}`} key={value}>
+          <input type="radio" name="gender" value={value} checked={gender === value} onChange={() => setGender(value)} />
+          <span aria-hidden="true">#</span>{value}
+        </label>)}</div>
       </fieldset>
 
       <fieldset className="tag-section">
@@ -196,6 +238,20 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
           <span aria-hidden="true">#</span>{category}
         </label>)}</div>
         <p className="tag-hint">未選択の場合はすべてのカテゴリーが対象です。</p>
+      </fieldset>
+
+      <fieldset className="preference-field">
+        <legend className="field-caption">好み <span className="field-hint">（複数選択可）</span> <span className="preference-count" role="status">{preferences.length}件選択中</span></legend>
+        <div id="preference-options" className="preference-tags">{(preferencesExpanded ? PREFERENCES : PREFERENCES.slice(0, INITIAL_PREFERENCE_COUNT)).map(({ id, label }) => <label className={`preference-tag${preferences.includes(id) ? " selected" : ""}`} key={id}>
+          <input type="checkbox" name="preferences" value={id} checked={preferences.includes(id)} onChange={(e) => {
+            const checked = e.target.checked;
+            setPreferences((current) => checked
+              ? current.includes(id) ? current : [...current, id]
+              : current.filter((item) => item !== id));
+          }} />
+          <span aria-hidden="true">#</span>{label}
+        </label>)}</div>
+        <button className="preferences-toggle" type="button" aria-expanded={preferencesExpanded} aria-controls="preference-options" onClick={() => setPreferencesExpanded((current) => !current)}>{preferencesExpanded ? "閉じる" : "もっと見る"}<span aria-hidden="true">{preferencesExpanded ? "⌃" : "⌄"}</span></button>
       </fieldset>
 
       <fieldset className="standard-price">
@@ -228,37 +284,7 @@ export default function StandardSearch({ onSearch, headerContent, tabsContent }:
         </div>
       </fieldset>
 
-      <fieldset className="preference-field">
-        <legend className="field-caption">好み <span className="field-hint">（複数選択可）</span> <span className="preference-count" role="status">{preferences.length}件選択中</span></legend>
-        <div id="preference-options" className="preference-tags">{(preferencesExpanded ? PREFERENCES : PREFERENCES.slice(0, INITIAL_PREFERENCE_COUNT)).map(({ id, label }) => <label className={`preference-tag${preferences.includes(id) ? " selected" : ""}`} key={id}>
-          <input type="checkbox" name="preferences" value={id} checked={preferences.includes(id)} onChange={(e) => {
-            const checked = e.target.checked;
-            setPreferences((current) => checked
-              ? current.includes(id) ? current : [...current, id]
-              : current.filter((item) => item !== id));
-          }} />
-          <span aria-hidden="true">#</span>{label}
-        </label>)}</div>
-        <button className="preferences-toggle" type="button" aria-expanded={preferencesExpanded} aria-controls="preference-options" onClick={() => setPreferencesExpanded((current) => !current)}>{preferencesExpanded ? "閉じる" : "もっと見る"}<span aria-hidden="true">{preferencesExpanded ? "⌃" : "⌄"}</span></button>
-      </fieldset>
-
-      <fieldset className="tag-section">
-        <legend className="field-caption">贈る相手の年代 <span className="field-hint">（1つ選択）</span></legend>
-        <div className="preference-tags">{AGES.map((value) => <label className={`preference-tag${age === value ? " selected" : ""}`} key={value}>
-          <input type="radio" name="age" value={value} checked={age === value} onChange={() => setAge(value)} />
-          <span aria-hidden="true">#</span>{value}
-        </label>)}</div>
-      </fieldset>
-
-      <fieldset className="tag-section">
-        <legend className="field-caption">贈る相手の性別 <span className="field-hint">（1つ選択）</span></legend>
-        <div className="preference-tags">{GENDERS.map((value) => <label className={`preference-tag${gender === value ? " selected" : ""}`} key={value}>
-          <input type="radio" name="gender" value={value} checked={gender === value} onChange={() => setGender(value)} />
-          <span aria-hidden="true">#</span>{value}
-        </label>)}</div>
-      </fieldset>
-
-      <p className="development-note"><strong>開発中：</strong>シーン・好み・性別・年代は検索結果に反映されません。おすすめ順・新着順は準備中です。評価順は口コミ数を考慮した補正評価で並び替えます。並び替え・期間変更時は直前に検索した条件を使用します。</p>
+      <p className="development-note"><strong>開発中：</strong>シーン・ギフトポリシー・好み・性別・年代は検索結果に反映されません。おすすめ順・新着順は準備中です。評価順は口コミ数を考慮した補正評価で並び替えます。並び替え・期間変更時は直前に検索した条件を使用します。</p>
     </form>
     </>
   );
