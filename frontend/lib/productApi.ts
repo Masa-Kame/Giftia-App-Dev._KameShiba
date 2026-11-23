@@ -38,3 +38,28 @@ export async function fetchProduct(productId: string): Promise<Product> {
   }
   return res.json();
 }
+
+// 似た商品（商品詳細の「この商品を探している方へのおすすめ」）
+export type SimilarProduct = {
+  product_id: string;
+  product_name: string | null;
+  brand: string | null;
+  category: string | null;
+  price: number | null;
+  rating: number | null; // 商品詳細と同じ評価の値
+  review_count: number | null;
+  reasons: string[]; // おすすめ理由（例：同じシーン（送別）で選ばれている）
+};
+
+export async function fetchSimilarProducts(
+  productId: string,
+  limit = 4
+): Promise<SimilarProduct[]> {
+  const res = await fetch(
+    `${API_BASE_URL}/api/products/${encodeURIComponent(productId)}/similar?limit=${limit}`,
+    { cache: "no-store" }
+  );
+  if (!res.ok) throw new Error(`おすすめ商品を取得できませんでした（${res.status}）`);
+  const data = await res.json();
+  return data.results;
+}
