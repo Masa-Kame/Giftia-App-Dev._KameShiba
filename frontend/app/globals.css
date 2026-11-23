@@ -1,4 +1,4 @@
-/* app/globals.css — Giftia 検索画面の見た目（配布。穴埋めの対象ではない） */
+/* app/globals.css — Giftia 検索画面の見た目 */
 :root { --ink:#1f2933; --sub:#616e7c; --line:#e4e7eb; --accent:#1b3a5c; --bg:#fafaf9; }
 * { box-sizing: border-box; }
 body { margin:0; font-family:"Hiragino Sans","Yu Gothic","Meiryo",sans-serif; color:var(--ink); background:var(--bg); }

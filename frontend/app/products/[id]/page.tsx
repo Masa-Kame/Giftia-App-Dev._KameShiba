@@ -204,6 +204,8 @@ export default function ProductDetailPage() {
             <p className="tag-hint">
               選択中：{selectedScene}
               {!isLoading && !error && `（${total}件）`}
+              {/* 口コミAPIは最大50件まで返す。それを超えるときは、表示している件数を明記する */}
+              {!isLoading && !error && total > reviews.length && `　※並び順の上位${reviews.length}件を表示`}
             </p>
             <ReviewSortSelect value={sortValue} onChange={setSortValue} />
           </div>

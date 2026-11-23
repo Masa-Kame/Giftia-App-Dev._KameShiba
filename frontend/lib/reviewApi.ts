@@ -2,9 +2,8 @@
 import type { Review, Scene, SceneFilterValue, SortValue, VoteType } from "@/types/review";
 import { ALL_SCENES, TEST_USER_ID } from "@/types/review";
 
-// APIのURL（既存の lib/api.ts と同じ設定を使う）
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+// APIのURL（lib/apiBase.ts で共通管理）
+import { API_BASE_URL } from "./apiBase";
 
 export type ReviewListResponse = {
   total: number; // 選んだシーンの件数

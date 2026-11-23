@@ -223,11 +223,6 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent, 
     event.preventDefault();
     // ボタン無効化だけに依存せず、Enterやプログラムからのsubmitも制御する。
     if (recommendationMessage || sceneVerificationMessage) return;
-    const maxPrice = priceMax === PRICE_MAX ? undefined : priceMax;
-    console.log("検索条件", { keyword, categories, scene, giftPolicy, sort, popularityPeriod, priceMin,
-      priceMax: maxPrice ?? null, preferences,
-      preferenceLabels: PREFERENCES.filter(({ id }) => preferences.includes(id)).map(({ label }) => label),
-      gender, age });
     await runSearch(currentCondition());
   }
 

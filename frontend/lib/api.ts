@@ -1,7 +1,5 @@
-// lib/api.ts — 2週目：searchGifts() の中身を「FastAPI に聞く」に差し替える（穴埋め版）
-// 【穴5】【穴6】を、対応表と公式ドキュメントを頼りに自分で埋める。
-// 1週目の lib/sampleGifts.ts は、このファイルに置き換える（ダミーは使わない）。
-// 答えは 配布コード/答え合わせ/frontend/api.ts（自分で埋めてから見る）。
+// lib/api.ts — 検索API（FastAPI の /api/search）を呼ぶ関数
+import { API_BASE_URL } from "./apiBase";
 
 // 画面が使う商品の形。1週目と同じ（画面・ResultCard は変えない）
 export type Gift = {
@@ -47,8 +45,8 @@ export type SearchCondition = {
   preferences?: string[]; // 受取人の好み。複数指定はOR
 };
 
-// API の場所。NEXT_PUBLIC_ の値はブラウザに配られる＝秘密は置かない（.env.local に書く）
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+// API の場所（lib/apiBase.ts で共通管理）
+const API = API_BASE_URL;
 
 // 入力した条件をサーバー（FastAPI）に送り、結果（Gift の配列）をもらう
 export async function searchGifts(c: SearchCondition): Promise<Gift[]> {
