@@ -19,6 +19,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import fetch_all
+from recipient_attributes import TargetAge, TargetGender, PreferenceId, matching_recipient_product_ids
 from reviews import router as reviews_router
 from products import router as products_router
 from votes import router as votes_router    
@@ -86,6 +87,9 @@ def search(
     popularity_period: Literal["weekly", "monthly", "yearly", "all"] = Query(default="monthly", description="人気順の集計期間"),
     scene: Literal["", "送別", "誕生日", "母の日", "お歳暮", "お中元", "結婚祝い", "父の日", "出産祝い"] = Query(default="", description="実DBで同名タグを確認済みのシーン。未指定はすべて"),
     gift_policy: Literal["classic", "unique"] | None = Query(default=None),
+    target_age: TargetAge = Query(default="", description="贈る相手の年代（デモ属性）"),
+    target_gender: TargetGender = Query(default="", description="贈る相手の性別（デモ属性）"),
+    preferences: list[PreferenceId] | None = Query(default=None, description="好みの内部ID。複数指定はOR（デモ属性）"),
 ):
     """条件に合う商品を指定順で返す。sort未指定時は従来のsales_count順を維持する。"""
     if sort == "recommend" and (scene != "送別" or gift_policy is None):
@@ -115,6 +119,14 @@ def search(
     if scene:
         where.append("EXISTS (SELECT 1 FROM product_scenes ps WHERE ps.product_id = p.product_id AND ps.scene_tag = %s)")
         params.append(scene)
+    recipient_ids = matching_recipient_product_ids(target_age, target_gender, preferences or [])
+    if recipient_ids is not None:
+        if recipient_ids:
+            placeholders = ", ".join(["%s"] * len(recipient_ids))
+            where.append(f"p.product_id IN ({placeholders})")
+            params.extend(recipient_ids)
+        else:
+            where.append("1 = 0")
     condition = " AND ".join(where)
 
     # ② 件数と、人気順の上位 limit 件を取る

@@ -1,0 +1,5671 @@
+{
+  "schema_version": 1,
+  "source": "demo_curated",
+  "description": "受取人向けのデモ用検索属性。年代・性別は商品説明の明示的な贈り先の記載から組み合わせを保持。購入者属性は使用しない。未付与属性は一致扱いにしない。",
+  "preference_master": {
+    "travel": {
+      "label": "旅行好き",
+      "db_preference_tag_id": null
+    },
+    "gourmet": {
+      "label": "グルメ好き",
+      "db_preference_tag_id": null
+    },
+    "beauty": {
+      "label": "美容好き",
+      "db_preference_tag_id": null
+    },
+    "gadgets": {
+      "label": "ガジェット好き",
+      "db_preference_tag_id": null
+    },
+    "plants-flowers": {
+      "label": "植物・花好き",
+      "db_preference_tag_id": null
+    },
+    "simple": {
+      "label": "シンプル好き",
+      "db_preference_tag_id": null
+    },
+    "alcohol": {
+      "label": "お酒好き",
+      "db_preference_tag_id": null
+    },
+    "coffee-tea": {
+      "label": "コーヒー・紅茶好き",
+      "db_preference_tag_id": null
+    },
+    "fashion": {
+      "label": "おしゃれ好き",
+      "db_preference_tag_id": null
+    },
+    "interior": {
+      "label": "インテリア好き",
+      "db_preference_tag_id": null
+    },
+    "cooking": {
+      "label": "料理好き",
+      "db_preference_tag_id": null
+    },
+    "relaxation": {
+      "label": "リラックス好き",
+      "db_preference_tag_id": null
+    },
+    "outdoors": {
+      "label": "アウトドア好き",
+      "db_preference_tag_id": null
+    },
+    "health": {
+      "label": "健康志向",
+      "db_preference_tag_id": null
+    },
+    "stationery": {
+      "label": "文房具好き",
+      "db_preference_tag_id": null
+    },
+    "other": {
+      "label": "その他",
+      "db_preference_tag_id": null
+    }
+  },
+  "products": {
+    "G0005": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "Mountain Bean Lab ひとことドリップバッグ「ありがとう」",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0007": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "喫茶と焙煎 さざなみ ドリップバッグ 20袋アソート",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0019": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "gourmet"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "category",
+          "quote": "食品",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0034": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "gourmet",
+        "plants-flowers"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "product_name",
+          "quote": "Petal Room Mio お花とお菓子のセット（焼き菓子）",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "Petal Room Mio お花とお菓子のセット（焼き菓子）",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0035": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "plants-flowers"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "ソープフラワー工房 あわはな ソープフラワーの花束（ピンク）",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0048": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "stationery"
+      ],
+      "preference_evidence": {
+        "stationery": {
+          "field": "product_name",
+          "quote": "木軸ペン工房 もくじく 名入れ木軸ボールペン（ウォールナット）",
+          "reason": "文房具好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0053": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "simple",
+        "relaxation"
+      ],
+      "preference_evidence": {
+        "simple": {
+          "field": "description",
+          "quote": "好みを選ばない、シンプルなつくりです。",
+          "reason": "シンプル好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "relaxation": {
+          "field": "product_name",
+          "quote": "Home Tech Sora 卓上アロマ加湿器（グレー）",
+          "reason": "リラックス好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0060": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "beauty"
+      ],
+      "preference_evidence": {
+        "beauty": {
+          "field": "product_name",
+          "quote": "Olive Soap Lab 石けんギフト「果実」",
+          "reason": "美容好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0064": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "gourmet"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "category",
+          "quote": "食品",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0079": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "Petal Room Mio プリザーブドフラワーボックス M",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0094": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "beauty"
+      ],
+      "preference_evidence": {
+        "beauty": {
+          "field": "product_name",
+          "quote": "MORIYU ミニハンドクリーム シトラス",
+          "reason": "美容好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0113": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "beauty"
+      ],
+      "preference_evidence": {
+        "beauty": {
+          "field": "product_name",
+          "quote": "Soyoka Leaf ハンドクリームとリップのセット ジャスミン",
+          "reason": "美容好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0125": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "beauty"
+      ],
+      "preference_evidence": {
+        "beauty": {
+          "field": "product_name",
+          "quote": "Aroma Nook ことばのハンドクリーム「おつかれさま」",
+          "reason": "美容好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0127": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G0132": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "e-Present Sora コーヒーチケット eギフト（2杯分）",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0134": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G0139": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "gourmet"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "category",
+          "quote": "食品",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0181": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G0209": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "plants-flowers",
+        "interior",
+        "stationery"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "Herbarium Studio Kiki ハーバリウムボールペン（ピンク）",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "interior": {
+          "field": "product_name",
+          "quote": "Herbarium Studio Kiki ハーバリウムボールペン（ピンク）",
+          "reason": "インテリア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "stationery": {
+          "field": "product_name",
+          "quote": "Herbarium Studio Kiki ハーバリウムボールペン（ピンク）",
+          "reason": "文房具好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0227": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "stationery"
+      ],
+      "preference_evidence": {
+        "stationery": {
+          "field": "product_name",
+          "quote": "筆記具の店 しるす 名入れ多機能ペン（シルバー）",
+          "reason": "文房具好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0253": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "coffee-tea",
+        "interior"
+      ],
+      "preference_evidence": {
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "Interior Studio Kiri 真鍮のフォトフレーム（アンティーク）",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "interior": {
+          "field": "product_name",
+          "quote": "Interior Studio Kiri 真鍮のフォトフレーム（アンティーク）",
+          "reason": "インテリア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0257": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "gourmet"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "category",
+          "quote": "食品",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0275": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "60代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gourmet",
+        "health"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "category",
+          "quote": "食品",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "health": {
+          "field": "description",
+          "quote": "健康に気をつかう方に喜ばれています。",
+          "reason": "健康志向に対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0279": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "stationery"
+      ],
+      "preference_evidence": {
+        "stationery": {
+          "field": "product_name",
+          "quote": "Brass Pen Works 木軸ボールペン（黒檀）",
+          "reason": "文房具好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0284": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "gourmet"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "category",
+          "quote": "食品",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0292": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gourmet"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "category",
+          "quote": "食品",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0296": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "gourmet"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "category",
+          "quote": "食品",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0302": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "beauty"
+      ],
+      "preference_evidence": {
+        "beauty": {
+          "field": "product_name",
+          "quote": "Aroma Nook ハンドクリームとリップのセット シトラス",
+          "reason": "美容好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0333": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G0339": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "Tea Salon Lumi ティーバッグアソート 30袋",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0349": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "珈琲焙煎所 ひなた ひとことドリップバッグ「これからも」",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0409": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "plants-flowers",
+        "interior"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "花の雑貨 はなびん ハーバリウムボトル「秋の森」",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "interior": {
+          "field": "product_name",
+          "quote": "花の雑貨 はなびん ハーバリウムボトル「秋の森」",
+          "reason": "インテリア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0443": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G0451": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "Soap Flower Hana ソープフラワーの花束（ホワイト）",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0471": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G0485": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "60代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "stationery"
+      ],
+      "preference_evidence": {
+        "stationery": {
+          "field": "product_name",
+          "quote": "ペン工房 ことのは 金属軸ボールペン（ゴールド）",
+          "reason": "文房具好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0508": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "plants-flowers"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "Bloom Studio Kiri ソープフラワーボックス（ブルー）",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0617": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "豆と湯 ことり珈琲 ドリップバッグ 8袋アソート",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0621": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "outdoors"
+      ],
+      "preference_evidence": {
+        "outdoors": {
+          "field": "product_name",
+          "quote": "Moment Gift Hana 体験ギフト「アウトドア」",
+          "reason": "アウトドア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0635": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G0649": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "simple",
+        "interior"
+      ],
+      "preference_evidence": {
+        "simple": {
+          "field": "description",
+          "quote": "写真の色を引き立てる、シンプルな木のフレームです。",
+          "reason": "シンプル好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "interior": {
+          "field": "product_name",
+          "quote": "額縁工房 わく 木製フォトフレーム A5",
+          "reason": "インテリア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0697": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "花の店 ブーケ ガラスドームのプリザーブドフラワー（レッド）",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0706": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G0719": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "plants-flowers"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "季節の花 あおば 花束「おまかせ」",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0758": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "gadgets"
+      ],
+      "preference_evidence": {
+        "gadgets": {
+          "field": "product_name",
+          "quote": "Home Tech Sora モバイルバッテリー 5000mAh（ブラック）",
+          "reason": "ガジェット好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0793": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G0822": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "焙煎工房 あかつき 自家焙煎ドリップコーヒーギフト 36袋",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0838": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "simple",
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "simple": {
+          "field": "description",
+          "quote": "シンプルな操作で、家族分のコーヒーを淹れられます。",
+          "reason": "シンプル好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "Smart Life Kiri ドリップ式コーヒーメーカー 5杯用",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0849": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G0919": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gadgets"
+      ],
+      "preference_evidence": {
+        "gadgets": {
+          "field": "product_name",
+          "quote": "Gadget Lab Kiri モバイルバッテリー 5000mAh（ブラック）",
+          "reason": "ガジェット好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G0988": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "60代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "interior"
+      ],
+      "preference_evidence": {
+        "interior": {
+          "field": "product_name",
+          "quote": "額縁工房 わく 真鍮のフォトフレーム（ホワイト）",
+          "reason": "インテリア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G1005": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G1065": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G1104": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G1221": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "70代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "Bloom Studio Kiri フラワーボックス「ピンク系」",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G1376": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gourmet",
+        "health"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "category",
+          "quote": "食品",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "health": {
+          "field": "description",
+          "quote": "健康に気をつかう方に喜ばれています。",
+          "reason": "健康志向に対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G1410": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gadgets"
+      ],
+      "preference_evidence": {
+        "gadgets": {
+          "field": "product_name",
+          "quote": "デジタル雑貨 ぴこ モバイルバッテリー 5000mAh（ブラック）",
+          "reason": "ガジェット好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G1433": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "beauty"
+      ],
+      "preference_evidence": {
+        "beauty": {
+          "field": "product_name",
+          "quote": "Soyoka Leaf ミニハンドクリーム シトラス",
+          "reason": "美容好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G1464": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "interior"
+      ],
+      "preference_evidence": {
+        "interior": {
+          "field": "product_name",
+          "quote": "Clock Studio Toki 北欧デザインの置き時計（ナチュラル）",
+          "reason": "インテリア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G1487": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G1510": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "花屋 はなのわ 花束「青紫系」",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G1656": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers",
+        "interior"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "Leaf Room Nagi 観葉植物と鉢のセット（グレー）",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "interior": {
+          "field": "product_name",
+          "quote": "Leaf Room Nagi 観葉植物と鉢のセット（グレー）",
+          "reason": "インテリア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G1671": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G1690": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "simple"
+      ],
+      "preference_evidence": {
+        "simple": {
+          "field": "description",
+          "quote": "好みを選ばない、シンプルなつくりです。",
+          "reason": "シンプル好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G1700": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "Fleur Nagi フラワーボックス「ピンク系」",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G1768": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G1780": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "beauty"
+      ],
+      "preference_evidence": {
+        "beauty": {
+          "field": "product_name",
+          "quote": "Soyoka Leaf ボタニカルハンドクリーム ジャスミン",
+          "reason": "美容好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G1925": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "stationery"
+      ],
+      "preference_evidence": {
+        "stationery": {
+          "field": "product_name",
+          "quote": "木軸ペン工房 もくじく 金属軸ボールペン（ネイビー）",
+          "reason": "文房具好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G1981": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "interior"
+      ],
+      "preference_evidence": {
+        "interior": {
+          "field": "product_name",
+          "quote": "Frame Studio Hana 真鍮のフォトフレーム（ゴールド）",
+          "reason": "インテリア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G2073": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G2085": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "beauty",
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "beauty": {
+          "field": "product_name",
+          "quote": "hanamizu ハンドクリームとリップのセット ホワイトティー",
+          "reason": "美容好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "hanamizu ハンドクリームとリップのセット ホワイトティー",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G2127": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers",
+        "interior"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "Botanical Kiri ハーバリウムボトル「冬の星」",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "interior": {
+          "field": "product_name",
+          "quote": "Botanical Kiri ハーバリウムボトル「冬の星」",
+          "reason": "インテリア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G2174": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G2222": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "beauty",
+        "simple"
+      ],
+      "preference_evidence": {
+        "beauty": {
+          "field": "product_name",
+          "quote": "Coton Hina 無添加ハンドクリーム 50g",
+          "reason": "美容好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "simple": {
+          "field": "description",
+          "quote": "シンプルな白いチューブです。",
+          "reason": "シンプル好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G2441": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gourmet"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "category",
+          "quote": "食品",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G2456": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "60代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gadgets",
+        "interior"
+      ],
+      "preference_evidence": {
+        "gadgets": {
+          "field": "product_name",
+          "quote": "Home Tech Sora 調光LEDデスクライト（ウッド）",
+          "reason": "ガジェット好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "interior": {
+          "field": "product_name",
+          "quote": "Home Tech Sora 調光LEDデスクライト（ウッド）",
+          "reason": "インテリア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G2469": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "ソーシャルギフト てがみ コーヒーチケット eギフト（1杯分）",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G2498": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "beauty"
+      ],
+      "preference_evidence": {
+        "beauty": {
+          "field": "product_name",
+          "quote": "Soyoka Leaf ボタニカルハンドクリーム ゼラニウム",
+          "reason": "美容好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G2525": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "outdoors"
+      ],
+      "preference_evidence": {
+        "outdoors": {
+          "field": "product_name",
+          "quote": "思い出をおくる店 体験ギフト「アウトドア」",
+          "reason": "アウトドア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G2593": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "stationery"
+      ],
+      "preference_evidence": {
+        "stationery": {
+          "field": "product_name",
+          "quote": "Pen Studio Kaku 木軸ボールペン（ウォールナット）",
+          "reason": "文房具好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G2702": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gadgets"
+      ],
+      "preference_evidence": {
+        "gadgets": {
+          "field": "product_name",
+          "quote": "家電工房 そよぎ クリップ式LEDライト（ネイビー）",
+          "reason": "ガジェット好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G2858": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G2990": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "relaxation"
+      ],
+      "preference_evidence": {
+        "relaxation": {
+          "field": "product_name",
+          "quote": "ゆずの湯 こはる バスソルト ゆず",
+          "reason": "リラックス好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G3041": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "interior"
+      ],
+      "preference_evidence": {
+        "interior": {
+          "field": "product_name",
+          "quote": "北欧雑貨 ルーム 真鍮のフォトフレーム（ホワイト）",
+          "reason": "インテリア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G3047": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G3187": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "Bloom Studio Kiri ガラスドームのプリザーブドフラワー（イエロー）",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G3226": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "ティーハウス みどりの窓 ティーバッグアソート 20袋",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G3298": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "フラワーアトリエ ひなぎく ガラスドームのプリザーブドフラワー（ホワイト）",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G3483": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gadgets"
+      ],
+      "preference_evidence": {
+        "gadgets": {
+          "field": "product_name",
+          "quote": "Home Tech Sora ワイヤレス充電スタンド（ウッド）",
+          "reason": "ガジェット好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G3486": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "60代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers",
+        "simple",
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "フラワーギフト いろどり お花とお菓子のセット（紅茶）",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "simple": {
+          "field": "description",
+          "quote": "好みを選ばない、シンプルなつくりです。",
+          "reason": "シンプル好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "フラワーギフト いろどり お花とお菓子のセット（紅茶）",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G3499": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "simple",
+        "relaxation"
+      ],
+      "preference_evidence": {
+        "simple": {
+          "field": "description",
+          "quote": "好みを選ばない、シンプルなつくりです。",
+          "reason": "シンプル好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "relaxation": {
+          "field": "product_name",
+          "quote": "Pocolo 卓上アロマ加湿器（ピンク）",
+          "reason": "リラックス好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G3510": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "beauty"
+      ],
+      "preference_evidence": {
+        "beauty": {
+          "field": "product_name",
+          "quote": "石けん工房 あわあわ 石けんギフト「はちみつと米」",
+          "reason": "美容好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G3567": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G3676": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "beauty"
+      ],
+      "preference_evidence": {
+        "beauty": {
+          "field": "product_name",
+          "quote": "Soyoka Leaf ボタニカルハンドクリーム ローズ",
+          "reason": "美容好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G3718": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "Petal Room Mio プリザーブドフラワーボックス ハート型",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G3730": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "relaxation"
+      ],
+      "preference_evidence": {
+        "relaxation": {
+          "field": "product_name",
+          "quote": "Bath Botanica バスソルト オレンジ",
+          "reason": "リラックス好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G3806": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gadgets"
+      ],
+      "preference_evidence": {
+        "gadgets": {
+          "field": "product_name",
+          "quote": "Relax Tech Kiri USBあったかクッション（チャコール）",
+          "reason": "ガジェット好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G3808": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "喫茶ギフト ゆげ ドリップコーヒーとクッキーのセット 8",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G4222": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "beauty"
+      ],
+      "preference_evidence": {
+        "beauty": {
+          "field": "product_name",
+          "quote": "Sensitive Care Nagi 無添加ハンドクリーム 75g",
+          "reason": "美容好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G4239": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "beauty"
+      ],
+      "preference_evidence": {
+        "beauty": {
+          "field": "product_name",
+          "quote": "Botanical Hand Lab ハンドクリームとリップのセット ジャスミン",
+          "reason": "美容好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G4254": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "beauty"
+      ],
+      "preference_evidence": {
+        "beauty": {
+          "field": "product_name",
+          "quote": "Soyoka Leaf ボタニカルハンドクリーム 金木犀",
+          "reason": "美容好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G4261": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "Fleur Nagi ガラスドームのプリザーブドフラワー（ブルー）",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G4284": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "ティーハウス みどりの窓 フレーバーティー アップル",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G4340": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "Flower Box Sora フラワーボックス「おまかせ」",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G4358": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "beauty"
+      ],
+      "preference_evidence": {
+        "beauty": {
+          "field": "product_name",
+          "quote": "手肌の店 てまり ハンドケアギフト「しっとり」",
+          "reason": "美容好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G4436": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G4466": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G4581": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G4709": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gadgets",
+        "simple",
+        "interior"
+      ],
+      "preference_evidence": {
+        "gadgets": {
+          "field": "product_name",
+          "quote": "Home Tech Sora 調光LEDデスクライト（ブラック）",
+          "reason": "ガジェット好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "simple": {
+          "field": "description",
+          "quote": "好みを選ばない、シンプルなつくりです。",
+          "reason": "シンプル好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "interior": {
+          "field": "product_name",
+          "quote": "Home Tech Sora 調光LEDデスクライト（ブラック）",
+          "reason": "インテリア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G4742": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G4764": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "Tsukiyo Coffee ひとことドリップバッグ「おつかれさま」",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G4857": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G4925": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G4949": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G4994": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "interior"
+      ],
+      "preference_evidence": {
+        "interior": {
+          "field": "product_name",
+          "quote": "Time & Wood Kiri 電波置き時計（シルバー）",
+          "reason": "インテリア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G5051": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "ティーハウス みどりの窓 ティーバッグアソート 30袋",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G5111": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gadgets"
+      ],
+      "preference_evidence": {
+        "gadgets": {
+          "field": "product_name",
+          "quote": "デジタル雑貨 ぴこ ワイヤレス充電スタンド（ブラック）",
+          "reason": "ガジェット好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G5118": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G5157": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "gourmet"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "product_name",
+          "quote": "Experience Gift Sora 体験ギフト「レストラン」",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G5172": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G5230": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "喫茶と焙煎 さざなみ ドリップバッグ 15袋アソート",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G5319": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "interior"
+      ],
+      "preference_evidence": {
+        "interior": {
+          "field": "product_name",
+          "quote": "Mokko Lab 真鍮のフォトフレーム（ゴールド）",
+          "reason": "インテリア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G5442": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gourmet"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "category",
+          "quote": "食品",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G5464": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G5466": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gourmet"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "category",
+          "quote": "食品",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G5576": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "relaxation"
+      ],
+      "preference_evidence": {
+        "relaxation": {
+          "field": "product_name",
+          "quote": "加湿器の店 うるおい 卓上アロマ加湿器（ピンク）",
+          "reason": "リラックス好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G5603": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers",
+        "interior"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "Leaf Room Nagi 卓上サイズのサンスベリア",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "interior": {
+          "field": "product_name",
+          "quote": "Leaf Room Nagi 卓上サイズのサンスベリア",
+          "reason": "インテリア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G5651": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "simple"
+      ],
+      "preference_evidence": {
+        "simple": {
+          "field": "description",
+          "quote": "好みを選ばない、シンプルなつくりです。",
+          "reason": "シンプル好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G5961": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G5971": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gourmet"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "category",
+          "quote": "食品",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G6034": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G6047": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "simple"
+      ],
+      "preference_evidence": {
+        "simple": {
+          "field": "description",
+          "quote": "好みを選ばない、シンプルなつくりです。",
+          "reason": "シンプル好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G6067": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "花屋 はなのわ 花束「白グリーン系」",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G6202": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G6230": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G6264": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "焙煎工房 あかつき プチドリップ モーニングブレンド",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G6355": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers",
+        "interior"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "グリーンショップ はっぱ 観葉植物と鉢のセット（テラコッタ）",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "interior": {
+          "field": "product_name",
+          "quote": "グリーンショップ はっぱ 観葉植物と鉢のセット（テラコッタ）",
+          "reason": "インテリア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G6507": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gadgets"
+      ],
+      "preference_evidence": {
+        "gadgets": {
+          "field": "product_name",
+          "quote": "Tech Goods Sora ワイヤレス充電スタンド（ブラック）",
+          "reason": "ガジェット好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G6750": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gourmet"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "category",
+          "quote": "食品",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G6878": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gadgets"
+      ],
+      "preference_evidence": {
+        "gadgets": {
+          "field": "product_name",
+          "quote": "Gadget Lab Kiri モバイルバッテリー 10000mAh（ホワイト）",
+          "reason": "ガジェット好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G6923": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "simple"
+      ],
+      "preference_evidence": {
+        "simple": {
+          "field": "description",
+          "quote": "好みを選ばない、シンプルなつくりです。",
+          "reason": "シンプル好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G6953": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "40代・50代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G7165": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gourmet",
+        "health"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "category",
+          "quote": "食品",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        },
+        "health": {
+          "field": "description",
+          "quote": "健康に気をつかう方に喜ばれています。",
+          "reason": "健康志向に対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G7218": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "40代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "30代・40代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "plants-flowers"
+      ],
+      "preference_evidence": {
+        "plants-flowers": {
+          "field": "product_name",
+          "quote": "綿の店 ふわり 刺繍ハンドタオル「花束」",
+          "reason": "植物・花好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G7240": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代の女性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G7275": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gadgets"
+      ],
+      "preference_evidence": {
+        "gadgets": {
+          "field": "product_name",
+          "quote": "デジタル雑貨 ぴこ モバイルバッテリー 10000mAh（ブラック）",
+          "reason": "ガジェット好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G7448": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "20代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G7729": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "coffee-tea"
+      ],
+      "preference_evidence": {
+        "coffee-tea": {
+          "field": "product_name",
+          "quote": "珈琲の森 こだま プチドリップ ビターブレンド",
+          "reason": "コーヒー・紅茶好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G7781": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [],
+      "preference_evidence": {}
+    },
+    "G7838": {
+      "source": "demo_curated",
+      "targets": [],
+      "preferences": [
+        "outdoors"
+      ],
+      "preference_evidence": {
+        "outdoors": {
+          "field": "product_name",
+          "quote": "体験の贈りもの いろは 体験ギフト「アウトドア」",
+          "reason": "アウトドア好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G7868": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "20代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "30代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "20代・30代の男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "beauty"
+      ],
+      "preference_evidence": {
+        "beauty": {
+          "field": "product_name",
+          "quote": "hanamizu ハンドクリームとリップのセット ラベンダー",
+          "reason": "美容好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    },
+    "G7938": {
+      "source": "demo_curated",
+      "targets": [
+        {
+          "target_age": "50代",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "50代",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "男性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        },
+        {
+          "target_age": "60代以上",
+          "target_gender": "女性",
+          "evidence": [
+            {
+              "field": "description",
+              "quote": "50代・60代の女性や男性へのプレゼント"
+            }
+          ]
+        }
+      ],
+      "preferences": [
+        "gourmet"
+      ],
+      "preference_evidence": {
+        "gourmet": {
+          "field": "category",
+          "quote": "食品",
+          "reason": "グルメ好きに対応する用途・特徴を商品情報からデモ用に分類"
+        }
+      }
+    }
+  }
+}

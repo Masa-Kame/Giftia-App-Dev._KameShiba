@@ -42,6 +42,9 @@ export type SearchCondition = {
   popularityPeriod?: PopularityPeriod;
   scene?: string; // 実DBで同名のタグを確認したシーンのみ送信する。
   giftPolicy?: "classic" | "unique" | "";
+  targetAge?: string;
+  targetGender?: string;
+  preferences?: string[]; // 受取人の好み。複数指定はOR
 };
 
 // API の場所。NEXT_PUBLIC_ の値はブラウザに配られる＝秘密は置かない（.env.local に書く）
@@ -53,6 +56,9 @@ export async function searchGifts(c: SearchCondition): Promise<Gift[]> {
   const params = new URLSearchParams();
   if (c.keyword) params.set("q", c.keyword);
   if (c.scene) params.set("scene", c.scene);
+  if (c.targetAge && c.targetAge !== "指定なし") params.set("target_age", c.targetAge);
+  if (c.targetGender && c.targetGender !== "指定なし") params.set("target_gender", c.targetGender);
+  c.preferences?.forEach((preference) => params.append("preferences", preference));
   const categories = c.categories?.filter((value) => value !== "") ?? [];
   if (categories.length > 0) {
     categories.forEach((category) => params.append("categories", category));

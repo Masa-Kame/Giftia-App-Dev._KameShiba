@@ -5,6 +5,7 @@ SQLをSQLiteのインメモリDBで実行し、MySQLとの実接続は行わな�
 """
 
 import sqlite3
+import sys
 import types
 import unittest
 from pathlib import Path
@@ -59,7 +60,7 @@ class SearchApiTests(unittest.TestCase):
         module.__file__ = str(source_path)
         # 検索以外のルーターとDB接続を隔離し、dotenvの呼び出しもスタブ化する。
         # patchの終了時にsys.modulesは元に戻るため、他のテストには影響しない。
-        with patch.dict("sys.modules", {"database": database, "dotenv": dotenv, **router_modules}):
+        with patch.object(sys, "path", [str(source_path.parent), *sys.path]), patch.dict("sys.modules", {"database": database, "dotenv": dotenv, **router_modules}):
             exec(compile(source_path.read_text(encoding="utf-8"), str(source_path), "exec"), module.__dict__)
         self.client = TestClient(module.app)
         self.module = module

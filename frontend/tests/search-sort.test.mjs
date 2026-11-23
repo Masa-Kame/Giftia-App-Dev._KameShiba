@@ -276,14 +276,14 @@ test("2モードの切り替えは入力条件を保持し、結果リセット�
   assert.equal(tag(h, "王道").props["aria-pressed"], true);
 });
 
-test("未対応属性は両モードでUI選択でき、今後対応予定と案内する", async () => {
+test("受取人属性は両モードで選択でき、デモ属性と案内してAPIに送信する", async () => {
   const h = harness();
   for (const mode of ["シンプル検索", "おすすめ検索"]) {
     switchMode(h, mode);
     for (const name of ["贈る相手の年代", "贈る相手の性別", "好み"]) {
       const field = section(h, name);
       assert.notEqual(field.props.disabled, true);
-      assert.match(text(field.props.children[0]), /今後対応予定/);
+      assert.match(text(field.props.children[0]), /デモ属性/);
     }
     for (const [name, value] of [["age", "30代"], ["gender", "女性"]]) {
       h.find((n) => n.props?.name === name && n.props.value === value).props.onChange();
@@ -298,10 +298,71 @@ test("未対応属性は両モードでUI選択でき、今後対応予定と案
   }
   switchMode(h, "シンプル検索");
   await h.submit();
-  for (const key of ["age", "gender", "preferences"]) assert.equal(h.urls.at(-1).searchParams.has(key), false);
+  assert.equal(h.urls.at(-1).searchParams.get("target_age"), "30代");
+  assert.equal(h.urls.at(-1).searchParams.get("target_gender"), "女性");
+  assert.deepEqual(h.urls.at(-1).searchParams.getAll("preferences"), ["travel"]);
   h.find((n) => n.props?.className === "clear-filters").props.onClick();
   assert.equal(h.find((n) => n.props?.name === "preferences" && n.props.value === "travel").props.checked, false);
   for (const name of ["age", "gender"]) assert.equal(h.find((n) => n.props?.name === name && n.props.value === "指定なし").props.checked, true);
+  await h.submit();
+  for (const key of ["target_age", "target_gender", "preferences"]) assert.equal(h.urls.at(-1).searchParams.has(key), false);
+});
+
+test("好みの複数指定を重複なく送信し、折りたたみ・並び替えでも適用条件を保持する", async () => {
+  const h = harness();
+  const preference = (value) => h.find((n) => n.props?.name === "preferences" && n.props.value === value);
+  for (const value of ["gourmet", "beauty", "beauty"]) preference(value).props.onChange({ target: { checked: true } });
+  h.find((n) => n.props?.name === "age" && n.props.value === "30代").props.onChange();
+  h.find((n) => n.props?.className === "preferences-toggle").props.onClick();
+  h.find((n) => n.props?.className === "preferences-toggle").props.onClick();
+  await h.submit();
+  assert.deepEqual(h.urls.at(-1).searchParams.getAll("preferences"), ["gourmet", "beauty"]);
+  // 未検索の編集は、直前に適用済みの条件を用いるシンプル検索のソートには混ぜない。
+  preference("beauty").props.onChange({ target: { checked: false } });
+  h.select("popular").props.onChange({ target: { value: "price_asc" } });
+  await settle();
+  assert.deepEqual(h.urls.at(-1).searchParams.getAll("preferences"), ["gourmet", "beauty"]);
+  assert.equal(h.urls.at(-1).searchParams.get("target_age"), "30代");
+  await h.submit();
+  assert.deepEqual(h.urls.at(-1).searchParams.getAll("preferences"), ["gourmet"]);
+});
+
+test("おすすめ検索は属性変更で再検索し、同じポリシーと検索条件を維持する", async () => {
+  const h = harness();
+  switchMode(h, "おすすめ検索");
+  tag(h, "送別").props.onClick(); tag(h, "王道").props.onClick();
+  await h.submit();
+  for (const [name, value, parameter] of [["age", "30代", "target_age"], ["gender", "女性", "target_gender"]]) {
+    const before = h.urls.length;
+    h.find((n) => n.props?.name === name && n.props.value === value).props.onChange();
+    await settle();
+    assert.equal(h.urls.length, before + 1);
+    assert.equal(h.urls.at(-1).searchParams.get(parameter), value);
+    assert.equal(h.urls.at(-1).searchParams.get("gift_policy"), "classic");
+  }
+  h.find((n) => n.props?.name === "preferences" && n.props.value === "gourmet").props.onChange({ target: { checked: true } });
+  await settle();
+  assert.deepEqual(h.urls.at(-1).searchParams.getAll("preferences"), ["gourmet"]);
+  assert.equal(h.urls.at(-1).searchParams.get("target_age"), "30代");
+  assert.equal(h.urls.at(-1).searchParams.get("target_gender"), "女性");
+});
+
+test("0件のときは条件解除を案内し、自動的な再検索を行わない", async () => {
+  const hook = hooks();
+  function StandardSearch() {}
+  const calls = [];
+  const { default: Home } = load("../app/page.tsx", {
+    react: hook.react, "next/image": { default() {} },
+    "./StandardSearch": { default: StandardSearch }, "./ResultCard": { default() {} },
+    "@/lib/api": { searchGifts: async (condition) => { calls.push(condition); return []; } },
+  });
+  const render = () => { hook.reset(); return Home(); };
+  const form = descendants(render()).find((n) => n.type === StandardSearch);
+  await form.props.onSearch({ preferences: ["other"] });
+  assert.equal(calls.length, 1);
+  const guidance = descendants(render()).find((n) => n.props?.role === "status");
+  assert.match(text(guidance), /条件に一致する商品がありません/);
+  assert.match(text(guidance), /条件を解除/);
 });
 
 test("DB対応未確認のシーンを無視して検索しない", async () => {
