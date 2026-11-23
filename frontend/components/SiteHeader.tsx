@@ -8,17 +8,11 @@ import styles from "./product.module.css";
 type Props = {
   cartCount: number;
   favoriteCount: number;
-  onCartClick: () => void;
-  onFavoritesClick: () => void;
 };
 
-// 商品詳細画面のヘッダー。ロゴ・トップに戻る・お気に入り・カート
-export default function SiteHeader({
-  cartCount,
-  favoriteCount,
-  onCartClick,
-  onFavoritesClick,
-}: Props) {
+// 商品詳細・カート・お気に入り画面のヘッダー。ロゴ・トップに戻る・お気に入り・カート
+// お気に入り・カートは仮の画面（Phase2で対応予定。app/favorites・app/cart）へ移動する
+export default function SiteHeader({ cartCount, favoriteCount }: Props) {
   // 検索結果から来たときは「検索結果に戻る」、それ以外は「トップに戻る」
   const canBackToResults = useHasSavedSearchResults();
 
@@ -47,18 +41,14 @@ export default function SiteHeader({
             ← トップに戻る
           </Link>
         )}
-        <button type="button" className={styles.navButton} onClick={onFavoritesClick}>
+        <Link href="/favorites" className={styles.navButton}>
           ♡ お気に入り
           <span className={styles.badge}>{favoriteCount}</span>
-        </button>
-        <button
-          type="button"
-          className={`${styles.navButton} ${styles.navCart}`}
-          onClick={onCartClick}
-        >
+        </Link>
+        <Link href="/cart" className={`${styles.navButton} ${styles.navCart}`}>
           カートを見る
           <span className={styles.badge}>{cartCount}</span>
-        </button>
+        </Link>
       </nav>
     </header>
   );

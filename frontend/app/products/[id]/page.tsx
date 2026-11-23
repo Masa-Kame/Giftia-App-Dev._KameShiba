@@ -128,8 +128,6 @@ export default function ProductDetailPage() {
       <SiteHeader
         cartCount={cartCount}
         favoriteCount={isFavorite ? 1 : 0}
-        onCartClick={() => setNotice("カート画面は準備中")}
-        onFavoritesClick={() => setNotice("お気に入り一覧の画面は準備中")}
       />
 
       {notice && (

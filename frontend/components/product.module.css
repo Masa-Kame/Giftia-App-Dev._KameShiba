@@ -422,6 +422,52 @@
   .skeleton { animation: none; }
 }
 
+feature/cart-favorites-placeholder
+/* ── 仮ページ（カート・お気に入り） PlaceholderPage.tsx ───────────── */
+.placeholderPage {
+  display: grid;
+  gap: 16px;
+}
+
+.placeholderTitle {
+  margin: 0;
+  font-size: 24px;
+}
+
+.placeholderBox {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 48px 24px;
+  border: 1px dashed #ccd5e2;
+  border-radius: 12px;
+  background: #fafbfc;
+  text-align: center;
+}
+
+.placeholderIcon {
+  width: 72px;
+  height: 72px;
+  color: var(--accent);
+}
+
+.placeholderLead {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.placeholderText {
+  max-width: 520px;
+  margin: 0;
+  color: var(--sub);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.placeholderButton {
+  margin-top: 8px;
+  text-decoration: none;
 /* ── この商品を探している方へのおすすめ SimilarProducts.tsx ───────────── */
 .imagePlaceholderCompact {
   gap: 4px;
@@ -531,4 +577,5 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
+main
 }
