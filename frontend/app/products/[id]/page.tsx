@@ -53,7 +53,8 @@ export default function ProductDetailPage() {
     error?: string;
   } | null>(null);
 
-  // 商品情報を取得する
+  // 商品情報を取得する（口コミを投稿したとき＝reloadKey が変わったときも取り直し、★の平均評価を更新する）
+  // key は商品IDのままなので、取り直している間も前の商品情報を表示し続ける（ちらつかない）
   useEffect(() => {
     let ignore = false; // 古い通信の結果で上書きしないための目印
     fetchProduct(productId)
@@ -71,7 +72,7 @@ export default function ProductDetailPage() {
     return () => {
       ignore = true;
     };
-  }, [productId]);
+  }, [productId, reloadKey]);
 
   // シーン・並び順を切り替えたとき・投稿したときに、APIから口コミを取り直す（#8・#13）
   const reviewKey = `${productId}|${selectedScene}|${sortValue}|${reloadKey}`;
