@@ -360,3 +360,64 @@
     width: 110px;
   }
 }
+
+/* ── 商品画像（ダミー） ProductImage.tsx ───────────── */
+.imagePlaceholder {
+  --hue: 210; /* ProductImage.tsx がカテゴリごとに上書きする */
+  aspect-ratio: 4 / 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: linear-gradient(135deg, hsl(var(--hue) 60% 96%), hsl(var(--hue) 45% 85%));
+  color: hsl(var(--hue) 35% 38%);
+}
+
+.imagePlaceholderIcon {
+  width: 96px;
+  height: 96px;
+}
+
+.imagePlaceholderLabel {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+/* ── 読み込み中の仮表示 ProductSkeleton.tsx ───────────── */
+.skeleton {
+  border-radius: 8px;
+  background: linear-gradient(90deg, #eef1f5 25%, #f7f8fa 50%, #eef1f5 75%);
+  background-size: 200% 100%;
+  animation: skeletonShine 1.2s ease-in-out infinite;
+}
+
+.skeletonImage {
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+}
+
+.skeletonColumn {
+  display: grid;
+  gap: 14px;
+}
+
+.skeletonBrand { width: 30%; height: 14px; }
+.skeletonTitle { width: 80%; height: 28px; }
+.skeletonText { width: 50%; height: 16px; }
+.skeletonPrice { width: 35%; height: 32px; }
+.skeletonBuyBox { height: 180px; border-radius: 12px; }
+.skeletonDetails { height: 320px; margin-top: 32px; border-radius: 12px; }
+
+@keyframes skeletonShine {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+/* 「視差効果を減らす」を設定している人には、きらめきを止める */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
