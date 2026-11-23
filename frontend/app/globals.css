@@ -110,7 +110,10 @@ body:has(.standard-page) { background:#fff; }
 .clear-filters { justify-self:end; display:flex; align-items:center; justify-content:center; gap:8px; min-height:44px; padding:8px 16px; border:1px solid #ccd5e2; border-radius:10px; background:#fff; color:inherit; font:inherit; font-size:.85em; cursor:pointer; box-shadow:0 2px 3px #1b3a5c10; }
 .search-actions button:disabled { opacity:.6; cursor:wait; }
 .standard-page .search-mode-tabs { margin-top:16px; flex-wrap:wrap; gap:10px; }
-.standard-page .search-mode-tabs button { font-size:16px; padding:10px 18px; }
+.standard-page .search-mode-tabs button { display:inline-flex; align-items:center; justify-content:center; gap:8px; font-size:16px; padding:10px 18px; background:#fff; color:var(--accent); border-color:#ccd5e2; white-space:nowrap; }
+.standard-page .search-mode-tabs button.on { color:#fff; border-color:var(--accent); }
+.standard-page .search-mode-tabs .search-icon { width:18px; height:18px; color:inherit; }
+.standard-page .search-mode-tabs button:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
 .standard-search fieldset:disabled .preference-tag,
 .standard-search fieldset:disabled .preferences-toggle { opacity:.55; cursor:not-allowed; }
 .preference-tag:disabled { opacity:.55; cursor:not-allowed; }

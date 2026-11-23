@@ -7,9 +7,9 @@ export function needsGiftPolicy(scene: string): boolean {
 
 export function recommendationRequirement(mode: string, scene: string, policy: GiftPolicy): string {
   if (mode !== "recommended") return "";
-  if (!scene) return "おすすめ検索には、シーンを選択してください。";
+  if (!scene) return "おまかせで探すには、シーンを選択してください。";
   if (needsGiftPolicy(scene) && !policy) {
-    return "おすすめ検索には、ギフトポリシー（王道・ユニーク）を選択してください。";
+    return "ギフトポリシーを選択してください。";
   }
   return "";
 }

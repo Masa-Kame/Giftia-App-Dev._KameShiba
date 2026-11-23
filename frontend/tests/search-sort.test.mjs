@@ -80,7 +80,7 @@ test("条件順とシーン順を仕様どおりに表示する", () => {
 
 test("ギフトポリシーは対象シーンだけ表示し、単一選択・再クリック解除できる", () => {
   const h = harness();
-  switchMode(h, "おすすめ検索");
+  switchMode(h, "おまかせで探す");
   assert.equal(section(h, "ギフトポリシー"), undefined);
   tag(h, "送別").props.onClick();
   assert.ok(section(h, "ギフトポリシー"));
@@ -98,7 +98,7 @@ test("ギフトポリシーは対象シーンだけ表示し、単一選択・�
 
 test("対象外シーン・シーン解除・条件クリアでポリシーを解除する", () => {
   const h = harness();
-  switchMode(h, "おすすめ検索");
+  switchMode(h, "おまかせで探す");
   for (const reset of [() => tag(h, "誕生日").props.onClick(), () => tag(h, "送別").props.onClick(),
     () => h.find((n) => n.props?.className === "clear-filters").props.onClick()]) {
     tag(h, "送別").props.onClick();
@@ -124,12 +124,12 @@ test("おすすめ順の必須判定はシーンと対象シーンのポリシ�
 
 test("おすすめ検索は必須不足を止め、送別とポリシーが揃ったらAPI送信する", async () => {
   const h = harness();
-  switchMode(h, "おすすめ検索");
+  switchMode(h, "おまかせで探す");
   assert.equal(h.find((n) => n.props?.className === "search-submit").props.disabled, true);
   assert.match(text(h.find((n) => n.props?.id === "recommendation-guidance")), /シーン/);
   await h.submit(); assert.equal(h.urls.length, 0);
   tag(h, "送別").props.onClick();
-  assert.match(text(h.find((n) => n.props?.id === "recommendation-guidance")), /ギフトポリシー/);
+  assert.equal(h.find((n) => n.props?.id === "recommendation-guidance"), undefined);
   await h.submit(); assert.equal(h.urls.length, 0);
   tag(h, "王道").props.onClick();
   assert.equal(h.find((n) => n.props?.className === "search-submit").props.disabled, false);
@@ -259,31 +259,31 @@ test("2モードの切り替えは入力条件を保持し、結果リセット�
   h.find((n) => n.props?.name === "categories").props.onChange({ target: { checked: true } });
   h.find((n) => n.props?.type === "range").props.onChange({ currentTarget: { value: "1500" } });
   await h.submit();
-  switchMode(h, "おすすめ検索");
+  switchMode(h, "おまかせで探す");
   assert.equal(h.resetCount(), 1);
   assert.equal(h.find((n) => n.props?.type === "search").props.value, "コーヒー");
   assert.equal(tag(h, "送別").props["aria-pressed"], true);
   assert.equal(h.find((n) => n.props?.name === "categories").props.checked, true);
   assert.equal(h.find((n) => n.props?.type === "range").props.value, 1500);
   tag(h, "王道").props.onClick();
-  switchMode(h, "シンプル検索");
+  switchMode(h, "自分で探す");
   assert.equal(section(h, "ギフトポリシー"), undefined);
   const count = h.urls.length;
   h.select("popular").props.onChange({ target: { value: "rating" } });
   await settle();
   assert.equal(h.urls.length, count); // モード変更前の検索条件では自動検索しない。
-  switchMode(h, "おすすめ検索");
+  switchMode(h, "おまかせで探す");
   assert.equal(tag(h, "王道").props["aria-pressed"], true);
 });
 
-test("受取人属性は両モードで選択でき、デモ属性と案内してAPIに送信する", async () => {
+test("受取人属性は両モードで選択でき、APIに送信する", async () => {
   const h = harness();
-  for (const mode of ["シンプル検索", "おすすめ検索"]) {
+  for (const mode of ["自分で探す", "おまかせで探す"]) {
     switchMode(h, mode);
     for (const name of ["贈る相手の年代", "贈る相手の性別", "好み"]) {
       const field = section(h, name);
       assert.notEqual(field.props.disabled, true);
-      assert.match(text(field.props.children[0]), /デモ属性/);
+      assert.doesNotMatch(text(field.props.children[0]), /デモ属性/);
     }
     for (const [name, value] of [["age", "30代"], ["gender", "女性"]]) {
       h.find((n) => n.props?.name === name && n.props.value === value).props.onChange();
@@ -296,7 +296,7 @@ test("受取人属性は両モードで選択でき、デモ属性と案内し�
     assert.equal(preference().props.checked, true);
     assert.match(h.find((n) => n.type === "label" && n.props.children?.[0]?.props?.name === "preferences" && n.props.children[0].props.value === "travel").props.className, /selected/);
   }
-  switchMode(h, "シンプル検索");
+  switchMode(h, "自分で探す");
   await h.submit();
   assert.equal(h.urls.at(-1).searchParams.get("target_age"), "30代");
   assert.equal(h.urls.at(-1).searchParams.get("target_gender"), "女性");
@@ -329,7 +329,7 @@ test("好みの複数指定を重複なく送信し、折りたたみ・並び�
 
 test("おすすめ検索は属性変更で再検索し、同じポリシーと検索条件を維持する", async () => {
   const h = harness();
-  switchMode(h, "おすすめ検索");
+  switchMode(h, "おまかせで探す");
   tag(h, "送別").props.onClick(); tag(h, "王道").props.onClick();
   await h.submit();
   for (const [name, value, parameter] of [["age", "30代", "target_age"], ["gender", "女性", "target_gender"]]) {
@@ -369,9 +369,9 @@ test("DB対応未確認のシーンを無視して検索しない", async () => 
   const h = harness();
   assert.equal(tag(h, "取引先へのお礼").props.disabled, true);
   assert.equal(tag(h, "お祝い").props.disabled, true);
-  switchMode(h, "おすすめ検索");
+  switchMode(h, "おまかせで探す");
   tag(h, "取引先へのお礼").props.onClick();
-  switchMode(h, "シンプル検索");
+  switchMode(h, "自分で探す");
   assert.equal(h.find((n) => n.props?.className === "search-submit").props.disabled, true);
   assert.match(text(h.find((n) => n.props?.id === "scene-verification-guidance")), /未確定/);
   await h.submit(); assert.equal(h.urls.length, 0);
@@ -394,7 +394,7 @@ test("確認済み8シーンを同名で送信し、並び替えでも保持す�
 
 test("おすすめ検索後の条件変更を再取得し、必須解除・モード変更では停止する", async () => {
   const h = harness();
-  switchMode(h, "おすすめ検索"); tag(h, "送別").props.onClick(); tag(h, "王道").props.onClick();
+  switchMode(h, "おまかせで探す"); tag(h, "送別").props.onClick(); tag(h, "王道").props.onClick();
   assert.equal(h.urls.length, 0);
   await h.submit();
   h.find((n) => n.props?.type === "search").props.onChange({ target: { value: "コーヒー" } }); await settle();
@@ -412,7 +412,7 @@ test("おすすめ検索後の条件変更を再取得し、必須解除・モ�
   await h.submit(); assert.equal(h.urls.length, count);
   tag(h, "王道").props.onClick(); await settle();
   assert.equal(h.urls.length, count + 1);
-  switchMode(h, "シンプル検索");
+  switchMode(h, "自分で探す");
   await h.submit();
   assert.equal(h.urls.at(-1).searchParams.get("sort"), "popular");
   assert.equal(h.urls.at(-1).searchParams.has("gift_policy"), false);

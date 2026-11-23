@@ -50,6 +50,8 @@ const PRICE_MIN = 500;
 const PRICE_MAX = 30000;
 const PRICE_STEP = 500;
 const ICON_PATHS: Record<string, string> = {
+  sparkles: "M9.94 15.5a2 2 0 0 0-1.44-1.44L3 12l5.5-2.06a2 2 0 0 0 1.44-1.44L12 3l2.06 5.5a2 2 0 0 0 1.44 1.44L21 12l-5.5 2.06a2 2 0 0 0-1.44 1.44L12 21l-2.06-5.5ZM5 3v4M3 5h4M19 17v4M17 19h4",
+  slidersHorizontal: "M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4",
   search: "M21 21l-5-5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0",
   reset: "M3 10a9 9 0 1 1 2 9M3 4v6h6",
   travel: "M5 7h14a2 2 0 0 1 2 2v11H3V9a2 2 0 0 1 2-2ZM9 7V4h6v3M8 7v13M16 7v13",
@@ -138,7 +140,8 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
   const priceLabel = `${priceMin.toLocaleString("ja-JP")}円 〜 ${priceMax === PRICE_MAX ? "上限なし" : `${priceMax.toLocaleString("ja-JP")}円`}`;
   const requiredInputMessage = recommendationRequirement(mode, scene, giftPolicy);
   const recommendationMessage = requiredInputMessage || (mode === "recommended" && scene !== "送別"
-    ? "現在のおすすめ検索は送別シーンのみ対応しています。他のシーンは今後対応予定です。" : "");
+    ? "現在のおまかせで探すモードは送別シーンのみ対応しています。他のシーンは今後対応予定です。" : "");
+  const visibleRecommendationMessage = scene && needsGiftPolicy(scene) && !giftPolicy ? "" : recommendationMessage;
   // おすすめ検索から保持した未対応シーンを無視して検索しない。
   const sceneVerificationMessage = mode === "simple" && scene && !FILTERABLE_SCENES.has(scene)
     ? "選択中のシーンはDBとの対応が未確定です。選択を解除するか、対応済みのシーンを選んでください。" : "";
@@ -219,13 +222,13 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
       <div className="search-sticky-header">
         <div className="search-header-content">{headerContent}
           <nav className="modes search-mode-tabs" aria-label="検索モード">
-            <button type="button" className={mode === "recommended" ? "on" : ""} aria-pressed={mode === "recommended"} onClick={() => changeMode("recommended")}>おすすめ検索</button>
-            <button type="button" className={mode === "simple" ? "on" : ""} aria-pressed={mode === "simple"} onClick={() => changeMode("simple")}>シンプル検索</button>
+            <button type="button" className={mode === "recommended" ? "on" : ""} aria-pressed={mode === "recommended"} onClick={() => changeMode("recommended")}><SearchIcon name="sparkles" />おまかせで探す</button>
+            <button type="button" className={mode === "simple" ? "on" : ""} aria-pressed={mode === "simple"} onClick={() => changeMode("simple")}><SearchIcon name="slidersHorizontal" />自分で探す</button>
           </nav>
         </div>
         <div className="search-header-controls">
           <div className="search-actions">
-          <button className="search-submit" type="submit" form="standard-search-form" disabled={pending || !!recommendationMessage || !!sceneVerificationMessage} aria-describedby={mode === "recommended" ? "recommendation-guidance" : sceneVerificationMessage ? "scene-verification-guidance" : undefined}><SearchIcon name="search" />{pending ? "検索中…" : "この条件で検索"}</button>
+          <button className="search-submit" type="submit" form="standard-search-form" disabled={pending || !!recommendationMessage || !!sceneVerificationMessage} aria-describedby={mode === "recommended" && visibleRecommendationMessage ? "recommendation-guidance" : sceneVerificationMessage ? "scene-verification-guidance" : undefined}><SearchIcon name="search" />{pending ? "検索中…" : "この条件で検索"}</button>
           <button className="clear-filters" type="button" disabled={pending} onClick={clear}><SearchIcon name="reset" />条件をクリア</button>
           </div>
           {mode === "simple" && <div className="search-sort-controls">
@@ -240,14 +243,13 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
             </select>
           </label>}
           </div>}
-          {mode === "recommended" && <p id="recommendation-guidance" className="tag-hint" role="status">{recommendationMessage || "ポリシー一致→未付与→反対の順で表示します。各グループ内は購入実績と口コミで並べます。"}</p>}
+          {mode === "recommended" && visibleRecommendationMessage && <p id="recommendation-guidance" className="tag-hint" role="status">{visibleRecommendationMessage}</p>}
           {sceneVerificationMessage && <p id="scene-verification-guidance" className="tag-hint" role="status">{sceneVerificationMessage}</p>}
         </div>
       </div>
     <form id="standard-search-form" className="standard-search" onSubmit={submit}>
       <div className="search-condition-intro">
-        <p className="search-intro">{mode === "simple" ? "条件に合う商品を絞り込み、比較するシンプル検索" : "送別シーンに合う商品を、デモ分類・購入実績・口コミをもとに提案します。"}</p>
-        {mode === "recommended" && <p className="development-note">王道・ユニークは商品名・説明に基づくデモ用分類です。MySQLの属性ではありません。購入実績・口コミはDBの実データを使用します。受取人の属性で絞り込んでから、おすすめ順に並べます。</p>}
+        <p className="search-intro">{mode === "simple" ? "キーワードや条件を指定して商品を検索" : "贈りたいギフトの方向性から、おすすめを提案"}</p>
       </div>
       <label className="keyword-field">
         <span className="visually-hidden">キーワード</span>
@@ -260,7 +262,6 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
         <div className="preference-tags">{SCENES.map((value) => <button type="button" className={`preference-tag${scene === value ? " selected" : ""}`} key={value} disabled={mode === "simple" && !FILTERABLE_SCENES.has(value) && scene !== value} aria-pressed={scene === value} onClick={() => selectScene(value)}>
           <span aria-hidden="true">#</span>{value}
         </button>)}</div>
-        <p className="tag-hint">選択中のタグを押すと解除できます。シンプル検索では同名タグで商品を絞り込みます。「取引先へのお礼」「お祝い」はDBとの対応が未確定です。おすすめ検索の実行は送別のみ対応しています。</p>
       </fieldset>
 
       {mode === "recommended" && needsGiftPolicy(scene) && <fieldset className="tag-section">
@@ -268,11 +269,10 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
         <div className="preference-tags">{GIFT_POLICIES.map(({ value, label }) => <button type="button" className={`preference-tag${giftPolicy === value ? " selected" : ""}`} key={value} aria-pressed={giftPolicy === value} onClick={() => selectPolicy(value)}>
           <span aria-hidden="true">#</span>{label}
         </button>)}</div>
-        <p className="tag-hint">おすすめ検索専用のデモ用分類です。一致する商品を優先し、未付与・反対の商品も条件に合う場合は候補に残します。</p>
       </fieldset>}
 
       <fieldset className="tag-section">
-        <legend className="field-caption">贈る相手の年代 <span className="field-hint">（任意・デモ属性）</span></legend>
+        <legend className="field-caption">贈る相手の年代 <span className="field-hint">（任意）</span></legend>
         <div className="preference-tags">{AGES.map((value) => <label className={`preference-tag${age === value ? " selected" : ""}`} key={value}>
           <input type="radio" name="age" value={value} checked={age === value} onChange={() => {
             setAge(value); refreshRecommendation({ targetAge: value === "指定なし" ? undefined : value });
@@ -282,7 +282,7 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
       </fieldset>
 
       <fieldset className="tag-section">
-        <legend className="field-caption">贈る相手の性別 <span className="field-hint">（任意・デモ属性）</span></legend>
+        <legend className="field-caption">贈る相手の性別 <span className="field-hint">（任意）</span></legend>
         <div className="preference-tags">{GENDERS.map((value) => <label className={`preference-tag${gender === value ? " selected" : ""}`} key={value}>
           <input type="radio" name="gender" value={value} checked={gender === value} onChange={() => {
             setGender(value); refreshRecommendation({ targetGender: value === "指定なし" ? undefined : value });
@@ -303,11 +303,10 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
           }} />
           <span aria-hidden="true">#</span>{category}
         </label>)}</div>
-        <p className="tag-hint">未選択の場合はすべてのカテゴリーが対象です。</p>
       </fieldset>
 
       <fieldset className="preference-field">
-        <legend className="field-caption">好み <span className="field-hint">（複数選択可・デモ属性）</span> <span className="preference-count" role="status">{preferences.length}件選択中</span></legend>
+        <legend className="field-caption">好み <span className="field-hint">（複数選択可）</span> <span className="preference-count" role="status">{preferences.length}件選択中</span></legend>
         <div id="preference-options" className="preference-tags">{(preferencesExpanded ? PREFERENCES : PREFERENCES.slice(0, INITIAL_PREFERENCE_COUNT)).map(({ id, label }) => <label className={`preference-tag${preferences.includes(id) ? " selected" : ""}`} key={id}>
           <input type="checkbox" name="preferences" value={id} checked={preferences.includes(id)} onChange={(e) => {
             const checked = e.target.checked;
@@ -319,7 +318,6 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
           <span aria-hidden="true">#</span>{label}
         </label>)}</div>
         <button className="preferences-toggle" type="button" aria-expanded={preferencesExpanded} aria-controls="preference-options" onClick={() => setPreferencesExpanded((current) => !current)}>{preferencesExpanded ? "閉じる" : "もっと見る"}<span aria-hidden="true">{preferencesExpanded ? "⌃" : "⌄"}</span></button>
-        <p className="tag-hint">選択した好みのいずれかに対応する商品を表示します。デモ属性が未登録の好みは0件になります。</p>
       </fieldset>
 
       <fieldset className="standard-price">
@@ -352,7 +350,6 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
         </div>
       </fieldset>
 
-      <p className="development-note"><strong>デモ用属性：</strong>年代・性別・好みは、一部商品の名称・説明に基づくデモ用分類で絞り込みます。購入者の属性ではありません。属性未登録の商品は指定条件に一致しません。新着順は準備中です。おすすめ検索後は条件変更で再検索します。シンプル検索の並び替え・期間変更では直前に検索した条件を使用します。</p>
     </form>
     </>
   );
