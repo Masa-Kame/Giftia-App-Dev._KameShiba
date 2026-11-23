@@ -49,3 +49,18 @@ test("商品IDの予約文字・日本語をURLエンコードする", () => {
   assert.equal(card.props.href, `/products/${encodeURIComponent(id)}`);
   assert.equal(decodeURIComponent(card.props.href.slice("/products/".length)), id);
 });
+
+test("おすすめ理由は最大3件、デモ属性とDBデータを区別し詳細リンクを維持する", () => {
+  const recommendation = { group: "match", reasons: [
+    { source: "database", text: "送別シーンに対応した商品" },
+    { source: "demo_curated", text: "基本的な飲み比べセット" },
+    { source: "database", text: "送別目的で68個の購入実績があります" },
+    { source: "database", text: "4つ目の理由" },
+  ] };
+  const html = renderToStaticMarkup(ResultCard({ gift: { ...gift, recommendation }, rank: 1 }));
+  assert.match(html, /おすすめ理由/); assert.match(html, /デモ属性/); assert.match(html, /DBデータ/);
+  assert.equal((html.match(/<li>/g) ?? []).length, 3);
+  assert.doesNotMatch(html, /4つ目の理由/);
+  assert.match(html, /href="\/products\/G0001"/);
+  assert.doesNotMatch(renderToStaticMarkup(ResultCard({ gift, rank: 1 })), /おすすめ理由|デモ属性/);
+});

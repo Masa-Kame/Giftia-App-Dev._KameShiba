@@ -1,4 +1,4 @@
-// STEP AのUI専用。ランキングAPIのパラメーターにはまだ追加しない。
+// おすすめ検索のポリシー状態と必須入力判定。送別のみの対応制御は画面側で行う。
 export type GiftPolicy = "" | "classic" | "unique";
 
 export function needsGiftPolicy(scene: string): boolean {

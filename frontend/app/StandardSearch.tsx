@@ -12,6 +12,7 @@ const GIFT_POLICIES: { value: GiftPolicy; label: string }[] = [
   { value: "classic", label: "王道" }, { value: "unique", label: "ユニーク" },
 ];
 type SearchMode = "simple" | "recommended";
+type SimpleSort = Exclude<SearchSort, "recommend">;
 const SORTS = [
   { value: "popular", label: "人気順" },
   { value: "rating", label: "評価順" },
@@ -72,9 +73,10 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
   const [categories, setCategories] = useState<string[]>([]);
   const [scene, setScene] = useState("");
   const [giftPolicy, setGiftPolicy] = useState<GiftPolicy>("");
-  const [sort, setSort] = useState<SearchSort>("popular");
+  const [sort, setSort] = useState<SimpleSort>("popular");
   const [popularityPeriod, setPopularityPeriod] = useState<PopularityPeriod>("monthly");
   const lastSearch = useRef<SearchCondition | null>(null);
+  const lastRecommendationInputs = useRef<string | null>(null);
   const requestVersion = useRef(0);
   const [priceMin, setPriceMin] = useState(PRICE_MIN);
   const [priceMax, setPriceMax] = useState(PRICE_MAX);
@@ -91,13 +93,17 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
     setMode(next);
     requestVersion.current++;
     lastSearch.current = null;
+    lastRecommendationInputs.current = null;
     setPending(false);
     onModeChange();
   }
 
   function clear() {
+    requestVersion.current++;
+    onModeChange();
     setKeyword(""); setCategories([]); setScene(""); setGiftPolicy(""); setSort("popular");
     setPopularityPeriod("monthly"); lastSearch.current = null;
+    lastRecommendationInputs.current = null;
     setPriceMin(PRICE_MIN); setPriceMax(PRICE_MAX); setPreferences([]);
     setMinPriceDraft(null); setMaxPriceDraft(null);
     setPreferencesExpanded(false);
@@ -109,23 +115,30 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
     setMinPriceDraft(fromText ? value : null);
     if (!value) return;
     const rounded = Math.round(Number(value) / PRICE_STEP) * PRICE_STEP;
-    setPriceMin(Math.max(PRICE_MIN, Math.min(rounded, priceMax)));
+    const next = Math.max(PRICE_MIN, Math.min(rounded, priceMax));
+    setPriceMin(next);
+    refreshRecommendation({ priceMin: next });
   }
 
   function updateMaxPrice(value: string, fromText = false) {
     if (value === "上限なし") {
       setMaxPriceDraft(null); setPriceMax(PRICE_MAX);
+      refreshRecommendation({ priceMax: undefined });
       return;
     }
     if (!/^\d*$/.test(value)) return;
     setMaxPriceDraft(fromText ? value : null);
     if (!value) return;
     const rounded = Math.round(Number(value) / PRICE_STEP) * PRICE_STEP;
-    setPriceMax(Math.min(PRICE_MAX, Math.max(rounded, priceMin)));
+    const next = Math.min(PRICE_MAX, Math.max(rounded, priceMin));
+    setPriceMax(next);
+    refreshRecommendation({ priceMax: next === PRICE_MAX ? undefined : next });
   }
 
   const priceLabel = `${priceMin.toLocaleString("ja-JP")}円 〜 ${priceMax === PRICE_MAX ? "上限なし" : `${priceMax.toLocaleString("ja-JP")}円`}`;
   const requiredInputMessage = recommendationRequirement(mode, scene, giftPolicy);
+  const recommendationMessage = requiredInputMessage || (mode === "recommended" && scene !== "送別"
+    ? "現在のおすすめ検索は送別シーンのみ対応しています。他のシーンは今後対応予定です。" : "");
   // おすすめ検索から保持した未対応シーンを無視して検索しない。
   const sceneVerificationMessage = mode === "simple" && scene && !FILTERABLE_SCENES.has(scene)
     ? "選択中のシーンはDBとの対応が未確定です。選択を解除するか、対応済みのシーンを選んでください。" : "";
@@ -134,11 +147,41 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
     const nextScene = scene === value ? "" : value;
     setScene(nextScene);
     if (!needsGiftPolicy(nextScene)) setGiftPolicy("");
+    refreshRecommendation({ scene: nextScene, giftPolicy: needsGiftPolicy(nextScene) ? giftPolicy : "" });
+  }
+
+  function currentCondition(): SearchCondition {
+    return { keyword, category: "", categories, scene, indivWrap: false, priceBand: "",
+      priceMin, priceMax: priceMax === PRICE_MAX ? undefined : priceMax,
+      sort: mode === "recommended" ? "recommend" : sort,
+      popularityPeriod, ...(mode === "recommended" ? { giftPolicy } : {}) };
+  }
+
+  function refreshRecommendation(changes: Partial<SearchCondition>) {
+    if (mode !== "recommended" || lastSearch.current?.sort !== "recommend") return;
+    const condition = { ...currentCondition(), ...changes };
+    if (condition.scene !== "送別" || !condition.giftPolicy) {
+      lastRecommendationInputs.current = null;
+      requestVersion.current++;
+      setPending(false);
+      onModeChange();
+      return;
+    }
+    // rangeのinput/changeの両イベントで同一検索を重複送信しない。
+    if (JSON.stringify(condition) === lastRecommendationInputs.current) return;
+    void runSearch(condition);
+  }
+
+  function selectPolicy(value: GiftPolicy) {
+    const next = giftPolicy === value ? "" : value;
+    setGiftPolicy(next);
+    refreshRecommendation({ giftPolicy: next });
   }
 
   async function runSearch(condition: SearchCondition) {
     const version = ++requestVersion.current;
     lastSearch.current = condition;
+    if (condition.sort === "recommend") lastRecommendationInputs.current = JSON.stringify(condition);
     setPending(true);
     try {
       await onSearch(condition);
@@ -147,7 +190,7 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
     }
   }
 
-  function changeSort(value: SearchSort) {
+  function changeSort(value: SimpleSort) {
     setSort(value);
     if (lastSearch.current) void runSearch({ ...lastSearch.current, sort: value, popularityPeriod });
   }
@@ -160,14 +203,13 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     // ボタン無効化だけに依存せず、Enterやプログラムからのsubmitも制御する。
-    if (mode === "recommended" || requiredInputMessage || sceneVerificationMessage) return;
+    if (recommendationMessage || sceneVerificationMessage) return;
     const maxPrice = priceMax === PRICE_MAX ? undefined : priceMax;
     console.log("検索条件", { keyword, categories, scene, giftPolicy, sort, popularityPeriod, priceMin,
       priceMax: maxPrice ?? null, preferences,
       preferenceLabels: PREFERENCES.filter(({ id }) => preferences.includes(id)).map(({ label }) => label),
       gender, age });
-    await runSearch({ keyword, category: "", categories, scene,
-      indivWrap: false, priceBand: "", priceMin, priceMax: maxPrice, sort, popularityPeriod });
+    await runSearch(currentCondition());
   }
 
   return (
@@ -181,12 +223,12 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
         </div>
         <div className="search-header-controls">
           <div className="search-actions">
-          <button className="search-submit" type="submit" form="standard-search-form" disabled={pending || mode === "recommended" || !!sceneVerificationMessage} aria-describedby={mode === "recommended" ? "recommendation-guidance" : sceneVerificationMessage ? "scene-verification-guidance" : undefined}><SearchIcon name="search" />{mode === "recommended" ? "おすすめ検索は準備中" : pending ? "検索中…" : "この条件で検索"}</button>
+          <button className="search-submit" type="submit" form="standard-search-form" disabled={pending || !!recommendationMessage || !!sceneVerificationMessage} aria-describedby={mode === "recommended" ? "recommendation-guidance" : sceneVerificationMessage ? "scene-verification-guidance" : undefined}><SearchIcon name="search" />{pending ? "検索中…" : "この条件で検索"}</button>
           <button className="clear-filters" type="button" disabled={pending} onClick={clear}><SearchIcon name="reset" />条件をクリア</button>
           </div>
           {mode === "simple" && <div className="search-sort-controls">
           <label className="sort-field"><span>並び替え</span>
-            <select value={sort} onChange={(e) => changeSort(e.target.value as SearchSort)}>
+            <select value={sort} onChange={(e) => changeSort(e.target.value as SimpleSort)}>
               {SORTS.map(({ value, label, disabled }) => <option key={value} value={value} disabled={disabled}>{label}</option>)}
             </select>
           </label>
@@ -196,18 +238,19 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
             </select>
           </label>}
           </div>}
-          {mode === "recommended" && <p id="recommendation-guidance" className="tag-hint" role="status">{requiredInputMessage || "おすすめ検索は準備中です。ランキング機能の公開後に検索できます。"}</p>}
+          {mode === "recommended" && <p id="recommendation-guidance" className="tag-hint" role="status">{recommendationMessage || "ポリシー一致→未付与→反対の順で表示します。各グループ内は購入実績と口コミで並べます。"}</p>}
           {sceneVerificationMessage && <p id="scene-verification-guidance" className="tag-hint" role="status">{sceneVerificationMessage}</p>}
         </div>
       </div>
     <form id="standard-search-form" className="standard-search" onSubmit={submit}>
       <div className="search-condition-intro">
-        <p className="search-intro">{mode === "simple" ? "条件に合う商品を絞り込み、比較するシンプル検索" : "贈り物選びをサポートするおすすめ検索（準備中）"}</p>
+        <p className="search-intro">{mode === "simple" ? "条件に合う商品を絞り込み、比較するシンプル検索" : "送別シーンに合う商品を、デモ分類・購入実績・口コミをもとに提案します。"}</p>
+        {mode === "recommended" && <p className="development-note">王道・ユニークは商品名・説明に基づくデモ用分類です。MySQLの属性ではありません。購入実績・口コミはDBの実データを使用します。年代・性別・好みは検索結果に反映されません。</p>}
       </div>
       <label className="keyword-field">
         <span className="visually-hidden">キーワード</span>
         <SearchIcon name="search" />
-        <input type="search" value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="キーワード（例：送別 お菓子）" />
+        <input type="search" value={keyword} onChange={(e) => { setKeyword(e.target.value); refreshRecommendation({ keyword: e.target.value }); }} placeholder="キーワード（例：送別 お菓子）" />
       </label>
 
       <fieldset className="tag-section">
@@ -215,15 +258,15 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
         <div className="preference-tags">{SCENES.map((value) => <button type="button" className={`preference-tag${scene === value ? " selected" : ""}`} key={value} disabled={mode === "simple" && !FILTERABLE_SCENES.has(value) && scene !== value} aria-pressed={scene === value} onClick={() => selectScene(value)}>
           <span aria-hidden="true">#</span>{value}
         </button>)}</div>
-        <p className="tag-hint">選択中のタグを押すと解除できます。シンプル検索では同名タグで商品を絞り込みます。「取引先へのお礼」「お祝い」はDBとの対応が未確定のため、新たに選択できません。おすすめ検索では選択できますが、検索実行は準備中です。</p>
+        <p className="tag-hint">選択中のタグを押すと解除できます。シンプル検索では同名タグで商品を絞り込みます。「取引先へのお礼」「お祝い」はDBとの対応が未確定です。おすすめ検索の実行は送別のみ対応しています。</p>
       </fieldset>
 
       {mode === "recommended" && needsGiftPolicy(scene) && <fieldset className="tag-section">
         <legend className="field-caption">ギフトポリシー <span className="field-hint">（1つ選択・必須）</span></legend>
-        <div className="preference-tags">{GIFT_POLICIES.map(({ value, label }) => <button type="button" className={`preference-tag${giftPolicy === value ? " selected" : ""}`} key={value} aria-pressed={giftPolicy === value} onClick={() => setGiftPolicy((current) => current === value ? "" : value)}>
+        <div className="preference-tags">{GIFT_POLICIES.map(({ value, label }) => <button type="button" className={`preference-tag${giftPolicy === value ? " selected" : ""}`} key={value} aria-pressed={giftPolicy === value} onClick={() => selectPolicy(value)}>
           <span aria-hidden="true">#</span>{label}
         </button>)}</div>
-        <p className="tag-hint">おすすめ検索専用です。データ未整備のため、現在ランキングには反映されません。</p>
+        <p className="tag-hint">おすすめ検索専用のデモ用分類です。一致する商品を優先し、未付与・反対の商品も条件に合う場合は候補に残します。</p>
       </fieldset>}
 
       <fieldset className="tag-section">
@@ -247,9 +290,10 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
         <div className="preference-tags">{CATEGORIES.map((category) => <label className={`preference-tag${categories.includes(category) ? " selected" : ""}`} key={category}>
           <input type="checkbox" name="categories" value={category} checked={categories.includes(category)} onChange={(e) => {
             const checked = e.target.checked;
-            setCategories((current) => checked
-              ? current.includes(category) ? current : [...current, category]
-              : current.filter((item) => item !== category));
+            const next = checked ? categories.includes(category) ? categories : [...categories, category]
+              : categories.filter((item) => item !== category);
+            setCategories(next);
+            refreshRecommendation({ categories: next });
           }} />
           <span aria-hidden="true">#</span>{category}
         </label>)}</div>
@@ -300,7 +344,7 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
         </div>
       </fieldset>
 
-      <p className="development-note"><strong>開発中：</strong>年代・性別・好みはUIで選択できますが、検索結果への反映は今後対応予定です。ギフトポリシーのデータも未整備です。おすすめ検索・新着順は準備中で、おすすめランキング・理由表示は行いません。評価順は口コミ数を考慮した補正評価を使用します。並び替え・期間変更では直前に検索した条件を使用します。</p>
+      <p className="development-note"><strong>開発中：</strong>年代・性別・好みはUIで選択できますが、検索結果への反映は今後対応予定です。新着順は準備中です。おすすめ検索は送別とデモ用ポリシー分類に対応しています。おすすめ検索後は対応条件の変更で再検索します。シンプル検索の並び替え・期間変更では直前に検索した条件を使用します。</p>
     </form>
     </>
   );

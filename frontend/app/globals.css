@@ -16,6 +16,10 @@ body { margin:0; font-family:"Hiragino Sans","Yu Gothic","Meiryo",sans-serif; co
 .card .name { font-size:16px; margin:4px 0; }
 .card .price { font-size:18px; font-weight:700; margin:4px 0; }
 .card .meta { color:var(--sub); font-size:13px; margin:2px 0; }
+.recommendation-reasons { margin-top:12px; padding-top:10px; border-top:1px solid var(--line); }
+.recommendation-reasons h4 { margin:6px 0; font-size:14px; color:var(--accent); }
+.recommendation-reasons ul { padding-left:18px; margin:6px 0; font-size:13px; line-height:1.7; }
+.reason-source { color:var(--accent); font-size:11px; background:#e8eff7; border-radius:4px; padding:2px 5px; }
 .price-slider { position:relative; height:36px; margin:0 12px; }
 .price-slider::before { content:""; position:absolute; top:15px; left:0; right:0; height:6px; border-radius:3px; background:linear-gradient(to right,var(--line) var(--price-start),var(--accent) var(--price-start),var(--accent) var(--price-end),var(--line) var(--price-end)); }
 .price-range::-webkit-slider-thumb { appearance:none; width:24px; height:24px; border:2px solid var(--accent); border-radius:50%; background:#fff; cursor:grab; pointer-events:auto; }

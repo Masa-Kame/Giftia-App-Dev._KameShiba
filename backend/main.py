@@ -8,11 +8,14 @@
 # 確認：http://localhost:8000/docs（Swagger UI。ブラウザから API を試せる）
 
 import os
+import json
+import math
 from datetime import date, timedelta
+from pathlib import Path
 from typing import Literal
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import fetch_all
@@ -24,9 +27,22 @@ load_dotenv()  # .env を読む（DB の接続情報・CORS の許可）
 
 app = FastAPI(title="Giftia Search API（2週目）")
 
-# 人気順だけに適用するデモ基準日。本番ではdate.today()等に切り替える。
+# 人気順・おすすめ検索の購入実績に適用するデモ基準日。
 DEMO_REFERENCE_DATE = date(2026, 6, 30)
 BAYES_PRIOR_WEIGHT = 10
+DEMO_ATTRIBUTES_PATH = Path(__file__).resolve().parent / "data" / "demo_product_attributes.json"
+
+# 評価順・価格順・おすすめ検索は同一の有効口コミ集合を使う。
+REVIEW_CTE = """WITH valid_reviews AS (
+    SELECT r.product_id AS reviewed_product_id, r.rating AS review_rating
+    FROM reviews r JOIN products existing ON existing.product_id = r.product_id
+    WHERE r.rating BETWEEN 1 AND 5
+), review_stats AS (
+    SELECT reviewed_product_id, COUNT(*) AS v, SUM(review_rating) AS rating_sum
+    FROM valid_reviews GROUP BY reviewed_product_id
+), global_rating AS (
+    SELECT AVG(1.0 * review_rating) AS average_c FROM valid_reviews
+)"""
 
 
 def popularity_bounds(period: str) -> tuple[str, str] | None:
@@ -66,11 +82,14 @@ def search(
     price_min: int | None = Query(default=None, ge=0, description="価格の下限（以上）"),
     price_max: int | None = Query(default=None, ge=0, description="価格の上限（以下）"),
     limit: int = Query(default=20, ge=1, le=100, description="返す件数"),
-    sort: Literal["price_asc", "popular", "rating"] | None = Query(default=None, description="未指定は従来の販売数順"),
+    sort: Literal["price_asc", "popular", "rating", "recommend"] | None = Query(default=None, description="未指定は従来の販売数順"),
     popularity_period: Literal["weekly", "monthly", "yearly", "all"] = Query(default="monthly", description="人気順の集計期間"),
     scene: Literal["", "送別", "誕生日", "母の日", "お歳暮", "お中元", "結婚祝い", "父の日", "出産祝い"] = Query(default="", description="実DBで同名タグを確認済みのシーン。未指定はすべて"),
+    gift_policy: Literal["classic", "unique"] | None = Query(default=None),
 ):
     """条件に合う商品を指定順で返す。sort未指定時は従来のsales_count順を維持する。"""
+    if sort == "recommend" and (scene != "送別" or gift_policy is None):
+        raise HTTPException(status_code=422, detail="おすすめ検索は送別シーンとギフトポリシーが必須です。")
     # ① 条件を WHERE に1つずつ足す（値は %s で渡し、SQL の文字列に直接つなげない）
     where, params = ["stock > 0"], []  # 在庫切れは出さない
     for word in q.split():  # 【穴1】q を空白で区切って1語ずつにする（文字列のメソッド）
@@ -100,6 +119,9 @@ def search(
 
     # ② 件数と、人気順の上位 limit 件を取る
     total = fetch_all(f"SELECT COUNT(*) AS n FROM products p WHERE {condition}", tuple(params))[0]["n"]
+    if sort == "recommend":
+        rows = recommendation_rows(condition, params, scene, gift_policy, limit)
+        return {"total": total, "results": rows}
     prefix, joins, sort_params = "", "", []
     rating_order = """CASE WHEN COALESCE(review_stats.v, 0) > 0 THEN 0 ELSE 1 END ASC,
             (1.0 * review_stats.rating_sum + %s * global_rating.average_c)
@@ -123,16 +145,7 @@ def search(
         ) popularity ON popularity.popularity_product_id = p.product_id"""
     elif sort in ("rating", "price_asc"):
         # 商品テーブルの保存値を使わず、同じ有効口コミ集合からR・v・Cを計算する。
-        prefix = """WITH valid_reviews AS (
-            SELECT r.product_id AS reviewed_product_id, r.rating AS review_rating
-            FROM reviews r JOIN products existing ON existing.product_id = r.product_id
-            WHERE r.rating BETWEEN 1 AND 5
-        ), review_stats AS (
-            SELECT reviewed_product_id, COUNT(*) AS v, SUM(review_rating) AS rating_sum
-            FROM valid_reviews GROUP BY reviewed_product_id
-        ), global_rating AS (
-            SELECT AVG(1.0 * review_rating) AS average_c FROM valid_reviews
-        )"""
+        prefix = REVIEW_CTE
         joins = """LEFT JOIN review_stats ON review_stats.reviewed_product_id = p.product_id
             CROSS JOIN global_rating"""
 
@@ -147,6 +160,68 @@ def search(
     )
     # ③ DB の行を、画面の Gift 型（1週目）に詰め替えて返す
     return {"total": total, "results": [to_gift(r) for r in rows]}
+
+
+def recommendation_rows(condition, params, scene, policy, limit):
+    """全候補を採点してから上限を適用。JSON由来の値もSQLに埋め込まない。"""
+    rows = fetch_all(
+        f"""{REVIEW_CTE}, scene_sales AS (
+            SELECT oi.product_id AS sold_product_id, SUM(oi.quantity) AS quantity
+            FROM orders o JOIN order_items oi ON oi.order_id = o.order_id
+            JOIN products existing ON existing.product_id = oi.product_id
+            WHERE o.gift_purpose = %s AND o.ordered_at < %s
+            GROUP BY oi.product_id
+        ), maximum_sales AS (
+            SELECT COALESCE(MAX(quantity), 0) AS max_quantity FROM scene_sales
+        )
+        SELECT p.product_id, p.category, p.brand, p.product_name,
+            p.price, p.rating, p.review_count,
+            COALESCE(scene_sales.quantity, 0) AS purchased_quantity,
+            COALESCE(review_stats.v, 0) AS valid_review_count,
+            COALESCE(review_stats.rating_sum, 0) AS rating_sum,
+            global_rating.average_c, maximum_sales.max_quantity
+        FROM products p
+        LEFT JOIN scene_sales ON scene_sales.sold_product_id = p.product_id
+        LEFT JOIN review_stats ON review_stats.reviewed_product_id = p.product_id
+        CROSS JOIN global_rating CROSS JOIN maximum_sales
+        WHERE {condition}
+        ORDER BY p.product_id ASC""",
+        (scene, (DEMO_REFERENCE_DATE + timedelta(days=1)).isoformat(), *params),
+    )
+    attributes = json.loads(DEMO_ATTRIBUTES_PATH.read_text(encoding="utf-8"))["products"]
+    tags = {item["product_id"]: item for item in attributes if item["scene"] == scene}
+    ranked = []
+    for row in rows:
+        tag = tags.get(row["product_id"])
+        group = 1 if tag is None else 0 if tag["policy"] == policy else 2
+        quantity = max(0, int(row["purchased_quantity"]))
+        maximum = max(0, int(row["max_quantity"]))
+        v = int(row["valid_review_count"])
+        c = float(row["average_c"]) if row["average_c"] is not None else None
+        bayes = (float(row["rating_sum"]) + BAYES_PRIOR_WEIGHT * c) / (v + BAYES_PRIOR_WEIGHT) if c is not None else None
+        purchase_score = 30 * math.log1p(quantity) / math.log1p(maximum) if maximum else 0.0
+        review_score = 20 * (bayes - 1) / 4 if bayes is not None else 0.0
+        policy_score = {0: 20, 1: 10, 2: 0}[group]
+        score = 30 + policy_score + purchase_score + review_score
+        reasons = [{"source": "database", "text": f"{scene}シーンに対応した商品"}]
+        if tag is not None and group == 0:
+            reasons.append({"source": "demo_curated", "text": tag["reason"]})
+        if quantity > 0:
+            reasons.append({"source": "database", "text": f"{scene}目的で{quantity:,}個の購入実績があります"})
+        if v >= 5 and bayes is not None and bayes >= 4:
+            reasons.append({"source": "database", "text": "購入者から高い評価を得ています"})
+        gift = to_gift(row)
+        gift["recommendation"] = {
+            "scene": scene, "policy": policy, "productPolicy": tag["policy"] if tag else None,
+            "group": ["match", "untagged", "opposite"][group],
+            "score": score, "components": {"scene": 30, "policy": policy_score,
+                "purchase": purchase_score, "review": review_score},
+            "purchaseQuantity": quantity, "validReviewCount": v, "bayesianRating": bayes,
+            "reasons": reasons[:3],
+        }
+        ranked.append((group, -score, str(row["product_id"]), gift))
+    ranked.sort(key=lambda item: item[:3])
+    return [item[3] for item in ranked[:limit]]
 
 
 def to_gift(r: dict) -> dict:

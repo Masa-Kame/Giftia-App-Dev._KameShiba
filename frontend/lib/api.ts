@@ -12,10 +12,22 @@ export type Gift = {
   price: number;       // 価格（円）
   rating: number;      // レビューの平均
   reviewCount: number; // レビュー件数
+  recommendation?: {
+    scene: string;
+    policy: "classic" | "unique";
+    productPolicy: "classic" | "unique" | null;
+    group: "match" | "untagged" | "opposite";
+    score: number;
+    components: { scene: number; policy: number; purchase: number; review: number };
+    purchaseQuantity: number;
+    validReviewCount: number;
+    bayesianRating: number | null;
+    reasons: { source: "database" | "demo_curated"; text: string }[];
+  };
 };
 
 // 既存APIとの互換性を維持した検索条件。
-export type SearchSort = "popular" | "rating" | "price_asc";
+export type SearchSort = "popular" | "rating" | "price_asc" | "recommend";
 export type PopularityPeriod = "weekly" | "monthly" | "yearly" | "all";
 
 export type SearchCondition = {
@@ -29,6 +41,7 @@ export type SearchCondition = {
   sort?: SearchSort;
   popularityPeriod?: PopularityPeriod;
   scene?: string; // 実DBで同名のタグを確認したシーンのみ送信する。
+  giftPolicy?: "classic" | "unique" | "";
 };
 
 // API の場所。NEXT_PUBLIC_ の値はブラウザに配られる＝秘密は置かない（.env.local に書く）
@@ -52,6 +65,7 @@ export async function searchGifts(c: SearchCondition): Promise<Gift[]> {
   if (c.priceMin !== undefined) params.set("price_min", String(c.priceMin));
   if (c.priceMax !== undefined) params.set("price_max", String(c.priceMax));
   if (c.sort) params.set("sort", c.sort);
+  if (c.sort === "recommend" && c.giftPolicy) params.set("gift_policy", c.giftPolicy);
   if (c.sort === "popular" && c.popularityPeriod) params.set("popularity_period", c.popularityPeriod);
 
   // ② fetch で API を呼ぶ（通信が終わるまで待つ＝await）
