@@ -7,6 +7,7 @@
 import os
 import json
 import math
+from functools import lru_cache
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Literal
@@ -171,6 +172,12 @@ def search(
     return {"total": total, "results": [to_gift(r) for r in rows]}
 
 
+@lru_cache(maxsize=4)
+def _load_demo_attributes(path, mtime_ns):
+    """ギフトポリシーのデモ属性。ファイルの更新日時が変わるまで、読み込み・解析した結果を使い回す"""
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def recommendation_rows(condition, params, scene, policy, limit):
     """全候補を採点してから上限を適用。JSON由来の値もSQLに埋め込まない。"""
     rows = fetch_all(
@@ -197,7 +204,7 @@ def recommendation_rows(condition, params, scene, policy, limit):
         ORDER BY p.product_id ASC""",
         (scene, (DEMO_REFERENCE_DATE + timedelta(days=1)).isoformat(), *params),
     )
-    attributes = json.loads(DEMO_ATTRIBUTES_PATH.read_text(encoding="utf-8"))["products"]
+    attributes = _load_demo_attributes(DEMO_ATTRIBUTES_PATH, DEMO_ATTRIBUTES_PATH.stat().st_mtime_ns)["products"]
     tags = {item["product_id"]: item for item in attributes if item["scene"] == scene}
     ranked = []
     for row in rows:

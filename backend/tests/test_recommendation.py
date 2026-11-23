@@ -27,6 +27,8 @@ class RecommendationTests(unittest.TestCase):
         """)
         self.db.executemany("INSERT INTO reviews VALUES (?, ?)", [("G1", 5)] * 5 + [("G2", 1)])
         self.module.DEMO_ATTRIBUTES_PATH = Mock()
+        # main.py はファイルの更新日時が変わるまで読み込み結果を使い回すので、日時も用意する
+        self.module.DEMO_ATTRIBUTES_PATH.stat.return_value.st_mtime_ns = 1
         self.module.DEMO_ATTRIBUTES_PATH.read_text.return_value = json.dumps({"products": [
             {"product_id": "G1", "scene": "送別", "policy": "classic", "reason": "定番の菓子", "source": "demo_curated"},
             {"product_id": "G3", "scene": "送別", "policy": "unique", "reason": "特徴的な意匠", "source": "demo_curated"},
@@ -107,6 +109,7 @@ class RecommendationTests(unittest.TestCase):
         untagged = next(g["recommendation"] for g in self.request()["results"] if g["id"] == "G5")
         self.assertEqual([r["kind"] for r in untagged["reasons"]], ["purchase"])
         self.db.execute("DELETE FROM order_items")
+        self.module.DEMO_ATTRIBUTES_PATH.stat.return_value.st_mtime_ns = 2  # ファイルが更新された想定
         self.module.DEMO_ATTRIBUTES_PATH.read_text.return_value = '{"products": []}'
         self.assertTrue(all(not g["recommendation"]["reasons"] for g in self.request()["results"]))
 
