@@ -19,6 +19,19 @@ export default function Home() {
   const restored = isClient ? saved : null;
   const shownResults = results === undefined ? restored?.results ?? null : results;
 
+  // 2列レイアウト用：上部ヘッダーの高さを CSS に渡す（左の検索条件欄をその下に固定するため）
+  const mainRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const main = mainRef.current;
+    const header = main?.querySelector<HTMLElement>(".search-sticky-header");
+    if (!main || !header) return;
+    const observer = new ResizeObserver(() => {
+      main.style.setProperty("--search-header-height", `${header.offsetHeight}px`);
+    });
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, [isClient]); // 検索フォームを作り直したあと（isClient が変わったあと）に測り直す
+
   // 商品を開いたときのスクロール位置に戻す（1回だけ）
   const scrollRestored = useRef(false);
   useEffect(() => {
@@ -57,11 +70,16 @@ export default function Home() {
   </h1></header>;
 
   return (
-    <main className="page standard-page">
+    <main ref={mainRef} className="page standard-page search-layout">
       {/* key：ブラウザで動き始めたら作り直し、保存した検索条件（initial）を入れる */}
       <StandardSearch key={isClient ? "client" : "server"} initial={restored ?? undefined}
         onSearch={searchStandard} onModeChange={resetResults} headerContent={headerContent} />
+      {/* 右側（2列のとき）：検索結果 */}
+      <div className="search-results-pane">
       {error && <p className="summary" role="alert">{error}</p>}
+      {!shownResults && !error && (
+        <p className="search-results-placeholder">条件を指定して「この条件で検索」を押すと、ここに検索結果が表示されます。</p>
+      )}
       {shownResults && (
         <section>
           <p className="summary">上位 {shownResults.length} 件</p>
@@ -72,6 +90,7 @@ export default function Home() {
           </div>
         </section>
       )}
+      </div>
     </main>
   );
 }
