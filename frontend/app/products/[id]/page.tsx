@@ -15,6 +15,7 @@ import ProductSkeleton from "@/components/ProductSkeleton";
 import { fetchProduct, type Product } from "@/lib/productApi";
 import { fetchReviews, type ReviewListResponse } from "@/lib/reviewApi";
 import { ALL_SCENES, type SceneFilterValue, type SortValue } from "@/types/review";
+import { clearSavedSearch, useHasSavedSearchResults } from "@/lib/searchSession";
 import styles from "@/components/review.module.css";
 import productStyles from "@/components/product.module.css";
 
@@ -23,6 +24,7 @@ import productStyles from "@/components/product.module.css";
 // ※ カート・購入・お気に入りは Phase1 の対象外のため、画面上の表示だけ（DBには保存しない）
 export default function ProductDetailPage() {
   const { id: productId } = useParams<{ id: string }>();
+  const canBackToResults = useHasSavedSearchResults(); // 検索結果から来たか
 
   // 取得結果を「どの条件で取ったか（key）」と一緒に持ち、useEffect内で直接setStateしない（ESLint対応）
   
@@ -138,8 +140,14 @@ export default function ProductDetailPage() {
       <div className={styles.container}>
         <ol className={productStyles.breadcrumb}>
           <li>
-            <Link href="/">トップ</Link>
+            {/* トップは検索前の画面へ（保存した検索状態を消す） */}
+            <Link href="/" onClick={clearSavedSearch}>トップ</Link>
           </li>
+          {canBackToResults && (
+            <li>
+              <Link href="/">検索結果</Link>
+            </li>
+          )}
           {product?.category && <li>{product.category}</li>}
           {product?.product_name && <li>{product.product_name}</li>}
         </ol>
