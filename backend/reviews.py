@@ -126,4 +126,15 @@ def create_review(product_id: str, body: ReviewCreate):
             (review_id, product_id, body.user_id, body.rating, comment, date.today(), body.scene_tag),
         )
 
+        # 商品の評価（平均）と口コミ件数を、口コミから数え直して更新する
+        # （商品カード・商品詳細の「★4.4（14件）」が投稿のたびに正しくなる。保存と同じ処理の中なので、失敗時は一緒に取り消される）
+        cur.execute(
+            """UPDATE products SET
+                 review_count = (SELECT COUNT(*) FROM reviews WHERE product_id = %s),
+                 rating = (SELECT ROUND(AVG(rating), 1) FROM reviews
+                           WHERE product_id = %s AND rating BETWEEN 1 AND 5)
+               WHERE product_id = %s""",
+            (product_id, product_id, product_id),
+        )
+
     return fetch_all(f"SELECT {REVIEW_COLUMNS} FROM reviews WHERE review_id = %s", (review_id,))[0]
