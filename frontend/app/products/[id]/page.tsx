@@ -9,6 +9,8 @@ import ProductDetails from "@/components/ProductDetails";
 import SceneFilter from "@/components/SceneFilter";
 import ReviewList from "@/components/ReviewList";
 import ReviewForm from "@/components/ReviewForm";
+import ProductImage from "@/components/ProductImage";
+import ProductSkeleton from "@/components/ProductSkeleton";
 import { fetchProduct, type Product } from "@/lib/productApi";
 import { fetchReviews, type ReviewListResponse } from "@/lib/reviewApi";
 import { ALL_SCENES, type SceneFilterValue } from "@/types/review";
@@ -147,10 +149,16 @@ export default function ProductDetailPage() {
           </p>
         )}
 
+        {/* 読み込み中は仮表示で場所を確保する（読み込み後に画面がずれないように） */}
+        {!product && !productError && <ProductSkeleton />}
+
         {product && (
           <>
             <section className={styles.product}>
-              <div className={styles.productImage}>商品画像</div>
+              <ProductImage
+                category={product.category}
+                productName={product.product_name}
+              />
               <ProductPurchase
                 product={product}
                 reviewTotal={allCount}
