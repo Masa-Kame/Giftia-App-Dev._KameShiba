@@ -56,6 +56,7 @@ class SearchApiTests(unittest.TestCase):
             router_modules[name] = router_module
         module = types.ModuleType("search_under_test")
         source_path = Path(__file__).resolve().parents[1] / "main.py"
+        module.__file__ = str(source_path)
         # 検索以外のルーターとDB接続を隔離し、dotenvの呼び出しもスタブ化する。
         # patchの終了時にsys.modulesは元に戻るため、他のテストには影響しない。
         with patch.dict("sys.modules", {"database": database, "dotenv": dotenv, **router_modules}):

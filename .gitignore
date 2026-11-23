@@ -153,3 +153,6 @@ vite.config.ts.timestamp-*
 venv/
 __pycache__/
 *.pyc
+
+# Local STEP B data exports (never commit DB extracts)
+/backend/exports/

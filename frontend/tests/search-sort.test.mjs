@@ -122,7 +122,7 @@ test("おすすめ順の必須判定はシーンと対象シーンのポリシ�
   for (const sort of ["popular", "rating", "price_asc"]) assert.equal(recommendationRequirement(sort, "", ""), "");
 });
 
-test("おすすめ順は準備中を維持し、必須不足・充足の双方でAPI送信しない", async () => {
+test("おすすめ検索は必須不足を止め、送別とポリシーが揃ったらAPI送信する", async () => {
   const h = harness();
   switchMode(h, "おすすめ検索");
   assert.equal(h.find((n) => n.props?.className === "search-submit").props.disabled, true);
@@ -132,8 +132,16 @@ test("おすすめ順は準備中を維持し、必須不足・充足の双方�
   assert.match(text(h.find((n) => n.props?.id === "recommendation-guidance")), /ギフトポリシー/);
   await h.submit(); assert.equal(h.urls.length, 0);
   tag(h, "王道").props.onClick();
-  assert.match(text(h.find((n) => n.props?.id === "recommendation-guidance")), /準備中/);
-  await h.submit(); assert.equal(h.urls.length, 0);
+  assert.equal(h.find((n) => n.props?.className === "search-submit").props.disabled, false);
+  await h.submit(); assert.equal(h.urls.length, 1);
+  assert.equal(h.urls[0].searchParams.get("sort"), "recommend");
+  assert.equal(h.urls[0].searchParams.get("scene"), "送別");
+  assert.equal(h.urls[0].searchParams.get("gift_policy"), "classic");
+  tag(h, "ユニーク").props.onClick(); await settle();
+  assert.equal(h.urls.at(-1).searchParams.get("gift_policy"), "unique");
+  tag(h, "誕生日").props.onClick();
+  assert.equal(h.find((n) => n.props?.className === "search-submit").props.disabled, true);
+  assert.match(text(h.find((n) => n.props?.id === "recommendation-guidance")), /送別シーンのみ/);
 });
 
 test("既存ソートはポリシー未選択でも検索可能で、未対応パラメーターを送信しない", async () => {
@@ -174,7 +182,7 @@ test("並び替え・期間変更で直前の検索条件を維持し再検索�
   h.find((n) => n.props?.type === "search").props.onChange({ target: { value: "gift sweets" } });
   const categories = descendants(h.find((n) => n.type === "form")).filter((n) => n.props?.name === "categories");
   categories[0].props.onChange({ target: { checked: true } });
-  categories[1].props.onChange({ target: { checked: true } });
+  h.find((n) => n.props?.name === "categories" && n.props.value === categories[1].props.value).props.onChange({ target: { checked: true } });
   h.find((n) => n.props?.type === "range").props.onInput({ currentTarget: { value: "1500" } });
   await h.submit();
   // 未適用のフォーム編集を、自動再検索へ混ぜない。
@@ -321,6 +329,32 @@ test("確認済み8シーンを同名で送信し、並び替えでも保持す�
     assert.equal(h.urls.at(-1).searchParams.get("scene"), scene);
     assert.equal(h.urls.at(-1).searchParams.get("sort"), "price_asc");
   }
+});
+
+test("おすすめ検索後の条件変更を再取得し、必須解除・モード変更では停止する", async () => {
+  const h = harness();
+  switchMode(h, "おすすめ検索"); tag(h, "送別").props.onClick(); tag(h, "王道").props.onClick();
+  assert.equal(h.urls.length, 0);
+  await h.submit();
+  h.find((n) => n.props?.type === "search").props.onChange({ target: { value: "コーヒー" } }); await settle();
+  assert.equal(h.urls.at(-1).searchParams.get("q"), "コーヒー");
+  h.find((n) => n.props?.name === "categories").props.onChange({ target: { checked: true } }); await settle();
+  assert.equal(h.urls.at(-1).searchParams.get("categories"), "食品");
+  const range = h.find((n) => n.props?.type === "range");
+  const before = h.urls.length;
+  range.props.onInput({ currentTarget: { value: "1500" } });
+  range.props.onChange({ currentTarget: { value: "1500" } }); await settle();
+  assert.equal(h.urls.length, before + 1);
+  assert.equal(h.urls.at(-1).searchParams.get("price_min"), "1500");
+  tag(h, "王道").props.onClick(); await settle();
+  const count = h.urls.length;
+  await h.submit(); assert.equal(h.urls.length, count);
+  tag(h, "王道").props.onClick(); await settle();
+  assert.equal(h.urls.length, count + 1);
+  switchMode(h, "シンプル検索");
+  await h.submit();
+  assert.equal(h.urls.at(-1).searchParams.get("sort"), "popular");
+  assert.equal(h.urls.at(-1).searchParams.has("gift_policy"), false);
 });
 
 test("モード変更は結果・エラーを消去し、保留中の成功・失敗を無効化する", async () => {
