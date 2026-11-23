@@ -152,6 +152,8 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
 
   function currentCondition(): SearchCondition {
     return { keyword, category: "", categories, scene, indivWrap: false, priceBand: "",
+      targetAge: age === "指定なし" ? undefined : age,
+      targetGender: gender === "指定なし" ? undefined : gender, preferences,
       priceMin, priceMax: priceMax === PRICE_MAX ? undefined : priceMax,
       sort: mode === "recommended" ? "recommend" : sort,
       popularityPeriod, ...(mode === "recommended" ? { giftPolicy } : {}) };
@@ -245,7 +247,7 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
     <form id="standard-search-form" className="standard-search" onSubmit={submit}>
       <div className="search-condition-intro">
         <p className="search-intro">{mode === "simple" ? "条件に合う商品を絞り込み、比較するシンプル検索" : "送別シーンに合う商品を、デモ分類・購入実績・口コミをもとに提案します。"}</p>
-        {mode === "recommended" && <p className="development-note">王道・ユニークは商品名・説明に基づくデモ用分類です。MySQLの属性ではありません。購入実績・口コミはDBの実データを使用します。年代・性別・好みは検索結果に反映されません。</p>}
+        {mode === "recommended" && <p className="development-note">王道・ユニークは商品名・説明に基づくデモ用分類です。MySQLの属性ではありません。購入実績・口コミはDBの実データを使用します。受取人の属性で絞り込んでから、おすすめ順に並べます。</p>}
       </div>
       <label className="keyword-field">
         <span className="visually-hidden">キーワード</span>
@@ -270,17 +272,21 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
       </fieldset>}
 
       <fieldset className="tag-section">
-        <legend className="field-caption">贈る相手の年代 <span className="field-hint">（今後対応予定）</span></legend>
+        <legend className="field-caption">贈る相手の年代 <span className="field-hint">（任意・デモ属性）</span></legend>
         <div className="preference-tags">{AGES.map((value) => <label className={`preference-tag${age === value ? " selected" : ""}`} key={value}>
-          <input type="radio" name="age" value={value} checked={age === value} onChange={() => setAge(value)} />
+          <input type="radio" name="age" value={value} checked={age === value} onChange={() => {
+            setAge(value); refreshRecommendation({ targetAge: value === "指定なし" ? undefined : value });
+          }} />
           <span aria-hidden="true">#</span>{value}
         </label>)}</div>
       </fieldset>
 
       <fieldset className="tag-section">
-        <legend className="field-caption">贈る相手の性別 <span className="field-hint">（今後対応予定）</span></legend>
+        <legend className="field-caption">贈る相手の性別 <span className="field-hint">（任意・デモ属性）</span></legend>
         <div className="preference-tags">{GENDERS.map((value) => <label className={`preference-tag${gender === value ? " selected" : ""}`} key={value}>
-          <input type="radio" name="gender" value={value} checked={gender === value} onChange={() => setGender(value)} />
+          <input type="radio" name="gender" value={value} checked={gender === value} onChange={() => {
+            setGender(value); refreshRecommendation({ targetGender: value === "指定なし" ? undefined : value });
+          }} />
           <span aria-hidden="true">#</span>{value}
         </label>)}</div>
       </fieldset>
@@ -301,17 +307,19 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
       </fieldset>
 
       <fieldset className="preference-field">
-        <legend className="field-caption">好み <span className="field-hint">（今後対応予定）</span> <span className="preference-count" role="status">{preferences.length}件選択中</span></legend>
+        <legend className="field-caption">好み <span className="field-hint">（複数選択可・デモ属性）</span> <span className="preference-count" role="status">{preferences.length}件選択中</span></legend>
         <div id="preference-options" className="preference-tags">{(preferencesExpanded ? PREFERENCES : PREFERENCES.slice(0, INITIAL_PREFERENCE_COUNT)).map(({ id, label }) => <label className={`preference-tag${preferences.includes(id) ? " selected" : ""}`} key={id}>
           <input type="checkbox" name="preferences" value={id} checked={preferences.includes(id)} onChange={(e) => {
             const checked = e.target.checked;
-            setPreferences((current) => checked
-              ? current.includes(id) ? current : [...current, id]
-              : current.filter((item) => item !== id));
+            const next = checked ? preferences.includes(id) ? preferences : [...preferences, id]
+              : preferences.filter((item) => item !== id);
+            setPreferences(next);
+            refreshRecommendation({ preferences: next });
           }} />
           <span aria-hidden="true">#</span>{label}
         </label>)}</div>
         <button className="preferences-toggle" type="button" aria-expanded={preferencesExpanded} aria-controls="preference-options" onClick={() => setPreferencesExpanded((current) => !current)}>{preferencesExpanded ? "閉じる" : "もっと見る"}<span aria-hidden="true">{preferencesExpanded ? "⌃" : "⌄"}</span></button>
+        <p className="tag-hint">選択した好みのいずれかに対応する商品を表示します。デモ属性が未登録の好みは0件になります。</p>
       </fieldset>
 
       <fieldset className="standard-price">
@@ -344,7 +352,7 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
         </div>
       </fieldset>
 
-      <p className="development-note"><strong>開発中：</strong>年代・性別・好みはUIで選択できますが、検索結果への反映は今後対応予定です。新着順は準備中です。おすすめ検索は送別とデモ用ポリシー分類に対応しています。おすすめ検索後は対応条件の変更で再検索します。シンプル検索の並び替え・期間変更では直前に検索した条件を使用します。</p>
+      <p className="development-note"><strong>デモ用属性：</strong>年代・性別・好みは、一部商品の名称・説明に基づくデモ用分類で絞り込みます。購入者の属性ではありません。属性未登録の商品は指定条件に一致しません。新着順は準備中です。おすすめ検索後は条件変更で再検索します。シンプル検索の並び替え・期間変更では直前に検索した条件を使用します。</p>
     </form>
     </>
   );

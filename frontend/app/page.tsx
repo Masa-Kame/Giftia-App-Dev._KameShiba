@@ -41,6 +41,7 @@ export default function Home() {
       {results && (
         <section>
           <p className="summary">上位 {results.length} 件</p>
+          {results.length === 0 && <p role="status">条件に一致する商品がありません。年代・性別・好みなどの条件を解除して、もう一度検索してください。</p>}
           <div className="grid">
             {results.map((g, i) => <ResultCard key={g.id} gift={g} rank={i + 1} />)}
           </div>
