@@ -16,6 +16,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import fetch_all
+from ranking_config import DEMO_REFERENCE_DATE
 from recipient_attributes import TargetAge, TargetGender, PreferenceId, matching_recipient_product_ids
 from reviews import router as reviews_router
 from products import router as products_router
@@ -26,7 +27,6 @@ load_dotenv()  # .env を読む（DB の接続情報・CORS の許可）
 app = FastAPI(title="Giftia Search API（2週目）")
 
 # 人気順・おすすめ検索の購入実績に適用するデモ基準日。
-DEMO_REFERENCE_DATE = date(2026, 6, 30)
 BAYES_PRIOR_WEIGHT = 10
 DEMO_ATTRIBUTES_PATH = Path(__file__).resolve().parent / "data" / "demo_product_attributes.json"
 

@@ -17,7 +17,10 @@ export type Product = {
   message_card: boolean | null; // メッセージカードに対応しているか
   rating: number | null; // レビューの平均
   review_count: number | null;
-  sales_count: number | null; // 直近1年の販売数
+  sales_count: number | null; // productsに保存された従来値。直近1年の表示には使わない
+  recent_year_sales_count?: number; // 注文履歴から集計した直近1暦年の購入数量
+  sales_period_start?: string;
+  sales_period_end?: string; // 基準日（この日を含む）
   stock: number | null;
   registered_at: string | null;
   scenes: string[]; // product_scenes

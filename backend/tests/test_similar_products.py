@@ -21,7 +21,7 @@ def load_products_module():
     spec = importlib.util.spec_from_file_location("products_under_test", path)
     module = importlib.util.module_from_spec(spec)
     # 読み込みの間だけ差し替える（ほかのテストに影響させない）
-    with patch.dict(sys.modules, {"database": database}):
+    with patch.object(sys, "path", [str(path.parent), *sys.path]), patch.dict(sys.modules, {"database": database}):
         spec.loader.exec_module(module)
     return module
 

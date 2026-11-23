@@ -13,7 +13,7 @@ function load(relativePath, modules = {}, globals = {}) {
   });
   const exports = {};
   runInNewContext(outputText, {
-    exports, require: (name) => modules[name] ?? (name === "@/lib/searchSession" ? {
+    exports, require: (name) => modules[name] ?? (name === "./apiBase" ? load("../lib/apiBase.ts", {}, globals) : name === "@/lib/searchSession" ? {
       loadSavedSearch: () => null, useIsClient: () => true,
       clearSavedSearch() {}, saveSearchForm() {}, saveSearchResults() {}, saveSearchScroll() {},
     } : require(name)),
