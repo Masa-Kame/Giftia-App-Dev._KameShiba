@@ -13,6 +13,7 @@ import ReviewSortSelect from "@/components/ReviewSortSelect";
 import ProductImage from "@/components/ProductImage";
 import ProductSkeleton from "@/components/ProductSkeleton";
 import SimilarProducts from "@/components/SimilarProducts";
+import { notifyMascot } from "@/lib/mascot";
 import { fetchProduct, type Product } from "@/lib/productApi";
 import { fetchReviews, type ReviewListResponse } from "@/lib/reviewApi";
 import { ALL_SCENES, type SceneFilterValue, type SortValue } from "@/types/review";
@@ -110,6 +111,7 @@ export default function ProductDetailPage() {
   const handleAddToCart = (quantity: number) => {
     setCartCount((n) => n + quantity);
     setNotice(`カートに${quantity}個入れました`);
+    notifyMascot("cart"); // かめしばマスコットが喜ぶ
   };
   const handleBuyNow = (quantity: number) => {
     setNotice(`${quantity}個の購入手続きへ進みます`);
