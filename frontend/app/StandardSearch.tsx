@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from "react";
 import type { SearchCondition, SearchSort, PopularityPeriod } from "@/lib/api";
 import { needsGiftPolicy, recommendationRequirement, type GiftPolicy } from "@/lib/recommendationUi";
+import { clearSavedSearch, saveSearchForm, type SavedSearch, type SavedSearchForm } from "@/lib/searchSession";
 
 const CATEGORIES = ["食品", "飲料", "コスメ", "インテリア", "カタログギフト", "ビジネス小物", "フラワー", "家電", "酒類", "生活雑貨"];
 const SCENES = ["送別", "取引先へのお礼", "誕生日", "お祝い", "母の日", "お歳暮", "お中元", "結婚祝い", "父の日", "出産祝い"];
@@ -65,30 +66,41 @@ const ICON_PATHS: Record<string, string> = {
 function SearchIcon({ name }: { name: string }) {
   return <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={ICON_PATHS[name]} /></svg>;
 }
-export default function StandardSearch({ onSearch, onModeChange, headerContent }: {
+export default function StandardSearch({ onSearch, onModeChange, headerContent, initial }: {
   onSearch: (condition: SearchCondition) => Promise<void>;
   headerContent: ReactNode;
   onModeChange: () => void;
+  initial?: SavedSearch; // 商品詳細から戻ったときに復元する検索条件（lib/searchSession.ts）
 }) {
-  const [mode, setMode] = useState<SearchMode>("simple");
-  const [keyword, setKeyword] = useState("");
-  const [categories, setCategories] = useState<string[]>([]);
-  const [scene, setScene] = useState("");
-  const [giftPolicy, setGiftPolicy] = useState<GiftPolicy>("");
-  const [sort, setSort] = useState<SimpleSort>("popular");
-  const [popularityPeriod, setPopularityPeriod] = useState<PopularityPeriod>("monthly");
-  const lastSearch = useRef<SearchCondition | null>(null);
-  const lastRecommendationInputs = useRef<string | null>(null);
+  const saved = initial?.form;
+  const [mode, setMode] = useState<SearchMode>(saved?.mode ?? "simple");
+  const [keyword, setKeyword] = useState(saved?.keyword ?? "");
+  const [categories, setCategories] = useState<string[]>(saved?.categories ?? []);
+  const [scene, setScene] = useState(saved?.scene ?? "");
+  const [giftPolicy, setGiftPolicy] = useState<GiftPolicy>((saved?.giftPolicy ?? "") as GiftPolicy);
+  const [sort, setSort] = useState<SimpleSort>((saved?.sort ?? "popular") as SimpleSort);
+  const [popularityPeriod, setPopularityPeriod] = useState<PopularityPeriod>((saved?.popularityPeriod ?? "monthly") as PopularityPeriod);
+  const lastSearch = useRef<SearchCondition | null>(initial?.condition ?? null);
+  const lastRecommendationInputs = useRef<string | null>(
+    initial?.condition?.sort === "recommend" ? JSON.stringify(initial.condition) : null);
   const requestVersion = useRef(0);
-  const [priceMin, setPriceMin] = useState(PRICE_MIN);
-  const [priceMax, setPriceMax] = useState(PRICE_MAX);
+  const [priceMin, setPriceMin] = useState(saved?.priceMin ?? PRICE_MIN);
+  const [priceMax, setPriceMax] = useState(saved?.priceMax ?? PRICE_MAX);
   const [minPriceDraft, setMinPriceDraft] = useState<string | null>(null);
   const [maxPriceDraft, setMaxPriceDraft] = useState<string | null>(null);
-  const [preferences, setPreferences] = useState<PreferenceId[]>([]);
+  const [preferences, setPreferences] = useState<PreferenceId[]>((saved?.preferences ?? []) as PreferenceId[]);
   const [preferencesExpanded, setPreferencesExpanded] = useState(false);
-  const [gender, setGender] = useState("指定なし");
-  const [age, setAge] = useState("指定なし");
+  const [gender, setGender] = useState(saved?.gender ?? "指定なし");
+  const [age, setAge] = useState(saved?.age ?? "指定なし");
   const [pending, setPending] = useState(false);
+
+  // 検索したあとは、入力内容を一時保存しておく（商品詳細から戻ったときに復元するため）
+  useEffect(() => {
+    if (!lastSearch.current) return;
+    const form: SavedSearchForm = { mode, keyword, categories, scene, giftPolicy, sort, popularityPeriod,
+      priceMin, priceMax, preferences, gender, age };
+    saveSearchForm(form, lastSearch.current);
+  });
 
   function changeMode(next: SearchMode) {
     if (next === mode) return;
@@ -98,11 +110,13 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent }
     lastRecommendationInputs.current = null;
     setPending(false);
     onModeChange();
+    clearSavedSearch();
   }
 
   function clear() {
     requestVersion.current++;
     onModeChange();
+    clearSavedSearch();
     setKeyword(""); setCategories([]); setScene(""); setGiftPolicy(""); setSort("popular");
     setPopularityPeriod("monthly"); lastSearch.current = null;
     lastRecommendationInputs.current = null;
