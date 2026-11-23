@@ -4,6 +4,7 @@
 #   app.include_router(reviews_router)
 
 from datetime import date
+from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -26,6 +27,17 @@ LIST_COLUMNS = """r.review_id, r.product_id, r.user_id, r.rating, r.comment, r.p
     COALESCE(r.vote_bad_count, 0) AS vote_bad_count,
     rr.vote_type AS my_vote"""
 
+# 並び替え（#13）。同じ値のときは新しい順にする
+#   new  : 新着順（初期表示）
+#   good : 参考になった順（good − bad の大きい順）
+#   bad  : 参考にならなかった順（bad の多い順）
+NEWEST = "r.posted_at DESC, r.review_id DESC"
+SORT_ORDERS = {
+    "new": NEWEST,
+    "good": f"(COALESCE(r.vote_good_count, 0) - COALESCE(r.vote_bad_count, 0)) DESC, {NEWEST}",
+    "bad": f"COALESCE(r.vote_bad_count, 0) DESC, {NEWEST}",
+}
+
 
 @router.get("")
 def list_reviews(
@@ -33,10 +45,12 @@ def list_reviews(
     scene: str = Query(default="", description="利用シーン（空ならすべて）"),
     limit: int = Query(default=50, ge=1, le=100, description="返す件数"),
     user_id: str = Query(default="", description="見ている人のユーザーID（その人が押した評価を my_vote で返す）"),
+    sort: Literal["new", "good", "bad"] = Query(default="new", description="並び順（new：新着 / good：参考になった順 / bad：参考にならなかった順）"),
 ):
-    """商品の口コミを新着順で返す。scene を指定すると、そのシーンの口コミだけ返す（#7）
+    """商品の口コミを返す（初期は新着順）。scene を指定すると、そのシーンの口コミだけ返す（#7）
     あわせて、シーンごとの口コミ件数（scene_counts）とすべての件数（all_count）も返す
-    user_id を渡すと、口コミごとにその人が押した評価（my_vote：1/2/null）も返す（#10）"""
+    user_id を渡すと、口コミごとにその人が押した評価（my_vote：1/2/null）も返す（#10）
+    sort で並び順を選べる（#13）。並び替えは SQL で行う（件数の上限 limit で切る前に並べるため）"""
     where, params = ["r.product_id = %s"], [product_id]
     if scene:
         if scene not in SCENES:
@@ -55,7 +69,7 @@ def list_reviews(
                 LEFT JOIN review_rating rr
                   ON rr.review_id = r.review_id AND rr.user_id = %s
                 WHERE {condition}
-                ORDER BY r.posted_at DESC, r.review_id DESC
+                ORDER BY {SORT_ORDERS[sort]}
                 LIMIT %s""",
             (user_id, *params, limit),
         )

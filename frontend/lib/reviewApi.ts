@@ -1,5 +1,5 @@
 // 口コミAPI（FastAPI）を呼ぶ関数
-import type { Review, Scene, SceneFilterValue, VoteType } from "@/types/review";
+import type { Review, Scene, SceneFilterValue, SortValue, VoteType } from "@/types/review";
 import { ALL_SCENES, TEST_USER_ID } from "@/types/review";
 
 // APIのURL（既存の lib/api.ts と同じ設定を使う）
@@ -24,13 +24,15 @@ async function toError(res: Response): Promise<Error> {
   return new Error(`通信に失敗しました（${res.status}）`);
 }
 
-// #7 シーン別口コミ取得
+// #7 シーン別口コミ取得 ／ #13 並び替え
 export async function fetchReviews(
   productId: string,
-  scene: SceneFilterValue
+  scene: SceneFilterValue,
+  sort: SortValue = "new"
 ): Promise<ReviewListResponse> {
   const params = new URLSearchParams();
   if (scene !== ALL_SCENES) params.set("scene", scene);
+  if (sort !== "new") params.set("sort", sort);
   // ログインがないため、テスト用ユーザーとして「自分が押した評価」を受け取る（#10）
   params.set("user_id", TEST_USER_ID);
 

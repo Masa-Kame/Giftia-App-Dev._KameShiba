@@ -261,3 +261,16 @@
     padding: 16px;
   }
 }
+
+/* ── 口コミ一覧の上の行（選択中のシーン ＋ 並び替え #13）───────── */
+.reviewToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.reviewToolbar > p {
+  margin: 0;
+}
