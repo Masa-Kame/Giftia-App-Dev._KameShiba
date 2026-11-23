@@ -231,6 +231,12 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent, 
     await runSearch(currentCondition());
   }
 
+  // 検索・クリアボタン。ヘッダー（縦並びのとき）と左欄の下（2列のとき）に置き、CSSでどちらか一方だけ表示する
+  const actionButtons = <>
+    <button className="search-submit" type="submit" form="standard-search-form" disabled={pending || !!recommendationMessage || !!sceneVerificationMessage} aria-describedby={mode === "recommended" && visibleRecommendationMessage ? "recommendation-guidance" : sceneVerificationMessage ? "scene-verification-guidance" : undefined}><SearchIcon name="search" />{pending ? "検索中…" : "この条件で検索"}</button>
+    <button className="clear-filters" type="button" disabled={pending} onClick={clear}><SearchIcon name="reset" />条件をクリア</button>
+  </>;
+
   return (
     <>
       <div className="search-sticky-header">
@@ -241,10 +247,7 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent, 
           </nav>
         </div>
         <div className="search-header-controls">
-          <div className="search-actions">
-          <button className="search-submit" type="submit" form="standard-search-form" disabled={pending || !!recommendationMessage || !!sceneVerificationMessage} aria-describedby={mode === "recommended" && visibleRecommendationMessage ? "recommendation-guidance" : sceneVerificationMessage ? "scene-verification-guidance" : undefined}><SearchIcon name="search" />{pending ? "検索中…" : "この条件で検索"}</button>
-          <button className="clear-filters" type="button" disabled={pending} onClick={clear}><SearchIcon name="reset" />条件をクリア</button>
-          </div>
+          <div className="search-actions">{actionButtons}</div>
           {mode === "simple" && <div className="search-sort-controls">
           <label className="sort-field"><span>並び替え</span>
             <select value={sort} onChange={(e) => changeSort(e.target.value as SimpleSort)}>
@@ -364,6 +367,8 @@ export default function StandardSearch({ onSearch, onModeChange, headerContent, 
         </div>
       </fieldset>
 
+      {/* 2列レイアウトのとき：左欄の一番下に固定（app/globals.css の .search-panel-actions） */}
+      <div className="search-actions search-panel-actions">{actionButtons}</div>
     </form>
     </>
   );
