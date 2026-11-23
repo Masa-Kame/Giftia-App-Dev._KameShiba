@@ -8,6 +8,7 @@ import styles from "./product.module.css";
 type Props = {
   category: string | null;
   productName: string | null;
+  compact?: boolean; // 小さいカード用（おすすめ商品など）
 };
 
 // 文字列から色相（0〜359）を決める
@@ -19,13 +20,13 @@ function hueOf(text: string): number {
   return hue;
 }
 
-export default function ProductImage({ category, productName }: Props) {
+export default function ProductImage({ category, productName, compact = false }: Props) {
   const label = category ?? "ギフト";
   const style = { "--hue": hueOf(label) } as CSSProperties;
 
   return (
     <div
-      className={styles.imagePlaceholder}
+      className={`${styles.imagePlaceholder} ${compact ? styles.imagePlaceholderCompact : ""}`}
       style={style}
       role="img"
       aria-label={`${productName ?? "商品"}のイメージ（ダミー画像）`}

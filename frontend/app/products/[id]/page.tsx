@@ -12,6 +12,7 @@ import ReviewForm from "@/components/ReviewForm";
 import ReviewSortSelect from "@/components/ReviewSortSelect";
 import ProductImage from "@/components/ProductImage";
 import ProductSkeleton from "@/components/ProductSkeleton";
+import SimilarProducts from "@/components/SimilarProducts";
 import { fetchProduct, type Product } from "@/lib/productApi";
 import { fetchReviews, type ReviewListResponse } from "@/lib/reviewApi";
 import { ALL_SCENES, type SceneFilterValue, type SortValue } from "@/types/review";
@@ -177,6 +178,9 @@ export default function ProductDetailPage() {
             </section>
 
             <ProductDetails product={product} />
+
+            {/* この商品を探している方へのおすすめ（同じシーン・同じカテゴリ・近い価格帯） */}
+            <SimilarProducts productId={productId} />
           </>
         )}
 
