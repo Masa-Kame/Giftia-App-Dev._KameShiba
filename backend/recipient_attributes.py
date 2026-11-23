@@ -1,6 +1,7 @@
 """受取人向けのデモ属性。DB移行時は読み込み部分を差し替える。"""
 
 import json
+from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
@@ -15,7 +16,13 @@ ATTRIBUTES_PATH = Path(__file__).resolve().parent / "data" / "demo_recipient_att
 
 
 def load_recipient_products():
-    return json.loads(ATTRIBUTES_PATH.read_text(encoding="utf-8"))["products"]
+    """デモ属性を返す。ファイルの更新日時が変わるまで、読み込み・解析した結果を使い回す（毎回の読み込みを省く）"""
+    return _load_json(ATTRIBUTES_PATH, ATTRIBUTES_PATH.stat().st_mtime_ns)["products"]
+
+
+@lru_cache(maxsize=4)
+def _load_json(path, mtime_ns):
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def matching_recipient_product_ids(target_age="", target_gender="", preferences=()):
