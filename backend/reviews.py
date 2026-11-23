@@ -3,9 +3,12 @@
 #   from reviews import router as reviews_router
 #   app.include_router(reviews_router)
 
+import random
+import time
 from datetime import date
 from typing import Literal
 
+import pymysql
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 
@@ -111,7 +114,37 @@ def create_review(product_id: str, body: ReviewCreate):
     if not fetch_all("SELECT 1 FROM products WHERE product_id = %s", (product_id,)):
         raise HTTPException(status_code=404, detail="商品が見つかりません")
 
+    # 同時に投稿が来ても口コミIDが重複しないよう、2段構えにする
+    #  ① 採番〜保存を GET_LOCK（名前付きロック）で1人ずつ通す。接続を閉じると自動で外れる
+    #  ② それでも重複（1062）やデッドロック（1213）・ロック待ちの時間切れ（1205）が起きたら、少し待ってやり直す
+    # 確認：tests/check_concurrent_review_post.py（10件を同時に投稿して、全件成功・ID重複なしを見る）
+    for attempt in range(1, ID_RETRY_LIMIT + 1):
+        try:
+            review_id = _insert_review(product_id, body, comment)
+            break
+        except pymysql.err.IntegrityError as e:
+            if e.args[0] != 1062 or attempt == ID_RETRY_LIMIT:
+                raise
+        except pymysql.err.OperationalError as e:
+            if e.args[0] not in (1205, 1213) or attempt == ID_RETRY_LIMIT:
+                raise
+        time.sleep(random.uniform(0.05, 0.2))  # 同時に再挑戦してまたぶつからないよう、待ち時間をずらす
+
+    return fetch_all(f"SELECT {REVIEW_COLUMNS} FROM reviews WHERE review_id = %s", (review_id,))[0]
+
+
+ID_RETRY_LIMIT = 5  # 口コミIDが重複したときにやり直す最大回数
+ID_LOCK_NAME = "giftia_review_id"  # 採番用の名前付きロック
+ID_LOCK_TIMEOUT = 10  # ロックを待つ最大秒数
+
+
+def _insert_review(product_id: str, body: "ReviewCreate", comment: str) -> str:
+    """口コミIDを決めて1件保存し、商品の評価・件数を更新する。保存した口コミIDを返す"""
     with transaction() as cur:
+        cur.execute("SELECT GET_LOCK(%s, %s) AS ok", (ID_LOCK_NAME, ID_LOCK_TIMEOUT))
+        if cur.fetchone()["ok"] != 1:
+            raise HTTPException(status_code=503, detail="投稿が混み合っています。少し待ってからもう一度投稿してください")
+
         # 口コミIDは「RV + 7桁」。いまの最大値の次の番号を振る
         cur.execute("SELECT MAX(review_id) AS max_id FROM reviews")
         max_id = cur.fetchone()["max_id"]
@@ -136,5 +169,4 @@ def create_review(product_id: str, body: ReviewCreate):
                WHERE product_id = %s""",
             (product_id, product_id, product_id),
         )
-
-    return fetch_all(f"SELECT {REVIEW_COLUMNS} FROM reviews WHERE review_id = %s", (review_id,))[0]
+    return review_id
