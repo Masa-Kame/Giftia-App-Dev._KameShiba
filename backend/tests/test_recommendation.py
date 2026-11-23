@@ -87,7 +87,7 @@ class RecommendationTests(unittest.TestCase):
             self.assertIsNone(rec["bayesianRating"])
             self.assertEqual(rec["components"]["review"], 0)
             self.assertEqual(rec["components"]["purchase"], 0)
-            self.assertEqual(len(rec["reasons"]), 1)
+            self.assertEqual(rec["reasons"], [])
 
     def test_valid_reviews_only_and_existing_products_only(self):
         before = self.request()["results"][0]["recommendation"]
@@ -96,22 +96,37 @@ class RecommendationTests(unittest.TestCase):
         self.assertEqual(before["bayesianRating"], after["bayesianRating"])
         self.assertEqual(before["validReviewCount"], after["validReviewCount"])
 
-    def test_reasons_sources_maximum_and_threshold(self):
+    def test_reasons_features_then_purchases_and_missing_cases(self):
         rec = self.request()["results"][0]["recommendation"]
-        self.assertEqual(len(rec["reasons"]), 3)
-        self.assertEqual([r["source"] for r in rec["reasons"]], ["database", "demo_curated", "database"])
+        self.assertEqual([r["kind"] for r in rec["reasons"]], ["feature", "purchase"])
+        self.assertEqual([r["source"] for r in rec["reasons"]], ["demo_curated", "database"])
+        self.assertEqual(rec["reasons"][1]["text"], "送別目的で2個の購入実績があります")
+        # 反対ポリシーでも、商品の特徴そのものは紹介する。
+        opposite = next(g["recommendation"] for g in self.request()["results"] if g["id"] == "G3")
+        self.assertEqual([r["kind"] for r in opposite["reasons"]], ["feature"])
+        untagged = next(g["recommendation"] for g in self.request()["results"] if g["id"] == "G5")
+        self.assertEqual([r["kind"] for r in untagged["reasons"]], ["purchase"])
+        self.db.execute("DELETE FROM order_items")
+        self.module.DEMO_ATTRIBUTES_PATH.read_text.return_value = '{"products": []}'
+        self.assertTrue(all(not g["recommendation"]["reasons"] for g in self.request()["results"]))
+
+    def test_purchase_quantity_format_and_no_scene_or_review_reasons(self):
+        self.db.execute("UPDATE order_items SET quantity = 1234 WHERE order_id = 'a' AND product_id = 'G1'")
         self.db.executemany("INSERT INTO reviews VALUES (?, ?)", [("G5", 5)] * 5)
-        untagged = next(g["recommendation"] for g in self.request()["results"] if g["id"] == "G5")
-        self.assertIn("購入者から高い評価を得ています", [r["text"] for r in untagged["reasons"]])
-        self.db.execute("DELETE FROM reviews WHERE product_id = 'G5'")
-        untagged = next(g["recommendation"] for g in self.request()["results"] if g["id"] == "G5")
-        self.assertNotIn("購入者から高い評価を得ています", [r["text"] for r in untagged["reasons"]])
+        data = self.request()
+        for g in data["results"]:
+            reasons = g["recommendation"]["reasons"]
+            self.assertLessEqual(len(reasons), 2)
+            self.assertTrue(all(r["kind"] in ("feature", "purchase") for r in reasons))
+            self.assertFalse(any("シーンに対応した商品" in r["text"] or "高い評価" in r["text"] for r in reasons))
+        first = next(g for g in data["results"] if g["id"] == "G1")
+        self.assertEqual(first["recommendation"]["reasons"][1]["text"], "送別目的で1,234個の購入実績があります")
 
     def test_score_sort_within_groups(self):
         self.module.DEMO_ATTRIBUTES_PATH.read_text.return_value = '{"products": []}'
         self.assertEqual(self.ids(self.request()), ["G5", "G1", "G3"])
 
-    def test_high_rating_reason_threshold_boundaries(self):
+    def test_review_scores_remain_without_review_reasons(self):
         self.db.execute("DELETE FROM reviews")
         self.db.executemany("INSERT INTO reviews VALUES (?, ?)", [("G5", 4)] * 4)
         def reason_texts():
@@ -119,7 +134,7 @@ class RecommendationTests(unittest.TestCase):
             return [r["text"] for r in rec["reasons"]]
         self.assertNotIn("購入者から高い評価を得ています", reason_texts())
         self.db.execute("INSERT INTO reviews VALUES ('G5', 4)")
-        self.assertIn("購入者から高い評価を得ています", reason_texts())
+        self.assertNotIn("購入者から高い評価を得ています", reason_texts())
         self.db.execute("UPDATE reviews SET rating = 3")
         self.assertNotIn("購入者から高い評価を得ています", reason_texts())
 

@@ -215,13 +215,11 @@ def recommendation_rows(condition, params, scene, policy, limit):
         review_score = 20 * (bayes - 1) / 4 if bayes is not None else 0.0
         policy_score = {0: 20, 1: 10, 2: 0}[group]
         score = 30 + policy_score + purchase_score + review_score
-        reasons = [{"source": "database", "text": f"{scene}シーンに対応した商品"}]
-        if tag is not None and group == 0:
-            reasons.append({"source": "demo_curated", "text": tag["reason"]})
+        reasons = []
+        if tag is not None and tag.get("reason"):
+            reasons.append({"source": "demo_curated", "kind": "feature", "text": tag["reason"]})
         if quantity > 0:
-            reasons.append({"source": "database", "text": f"{scene}目的で{quantity:,}個の購入実績があります"})
-        if v >= 5 and bayes is not None and bayes >= 4:
-            reasons.append({"source": "database", "text": "購入者から高い評価を得ています"})
+            reasons.append({"source": "database", "kind": "purchase", "text": f"{scene}目的で{quantity:,}個の購入実績があります"})
         gift = to_gift(row)
         gift["recommendation"] = {
             "scene": scene, "policy": policy, "productPolicy": tag["policy"] if tag else None,
@@ -229,7 +227,7 @@ def recommendation_rows(condition, params, scene, policy, limit):
             "score": score, "components": {"scene": 30, "policy": policy_score,
                 "purchase": purchase_score, "review": review_score},
             "purchaseQuantity": quantity, "validReviewCount": v, "bayesianRating": bayes,
-            "reasons": reasons[:3],
+            "reasons": reasons[:2],
         }
         ranked.append((group, -score, str(row["product_id"]), gift))
     ranked.sort(key=lambda item: item[:3])

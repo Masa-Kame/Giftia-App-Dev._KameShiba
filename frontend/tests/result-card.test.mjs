@@ -50,17 +50,44 @@ test("商品IDの予約文字・日本語をURLエンコードする", () => {
   assert.equal(decodeURIComponent(card.props.href.slice("/products/".length)), id);
 });
 
-test("おすすめ理由は最大3件、デモ属性とDBデータを区別し詳細リンクを維持する", () => {
+test("理由は特徴・購入実績の最大2件、出典は利用者向けの表現で表示する", () => {
   const recommendation = { group: "match", reasons: [
+    { source: "database", kind: "purchase", text: "送別目的で68個の購入実績があります" },
+    { source: "demo_curated", kind: "feature", text: "飲み比べの楽しみを贈れます" },
+    { source: "demo_curated", kind: "feature", text: "重複する特徴" },
     { source: "database", text: "送別シーンに対応した商品" },
-    { source: "demo_curated", text: "基本的な飲み比べセット" },
-    { source: "database", text: "送別目的で68個の購入実績があります" },
-    { source: "database", text: "4つ目の理由" },
+    { source: "database", text: "購入者から高い評価を得ています" },
   ] };
   const html = renderToStaticMarkup(ResultCard({ gift: { ...gift, recommendation }, rank: 1 }));
-  assert.match(html, /おすすめ理由/); assert.match(html, /デモ属性/); assert.match(html, /DBデータ/);
-  assert.equal((html.match(/<li>/g) ?? []).length, 3);
-  assert.doesNotMatch(html, /4つ目の理由/);
+  assert.match(html, /商品の特徴/); assert.match(html, /購入実績/);
+  assert.doesNotMatch(html, /デモ用の紹介文/);
+  assert.equal((html.match(/<li>/g) ?? []).length, 2);
+  assert.ok(html.indexOf("飲み比べの楽しみ") < html.indexOf("送別目的で68個"));
+  assert.doesNotMatch(html, /重複する特徴|送別シーンに対応した商品|購入者から高い評価|DBデータ|デモ属性|ポリシー一致|ポリシー未付与|反対ポリシー/);
   assert.match(html, /href="\/products\/G0001"/);
-  assert.doesNotMatch(renderToStaticMarkup(ResultCard({ gift, rank: 1 })), /おすすめ理由|デモ属性/);
+  assert.match(html, /評価4.5 \(12件）/);
+});
+
+test("理由なし・自分で探す・旧形式の理由だけの場合は理由欄を表示しない", () => {
+  for (const recommendation of [undefined, { reasons: [] }, { reasons: [
+    { source: "database", text: "送別シーンに対応した商品" },
+    { source: "database", text: "購入者から高い評価を得ています" },
+  ] }]) {
+    const html = renderToStaticMarkup(ResultCard({ gift: { ...gift, recommendation }, rank: 1 }));
+    assert.doesNotMatch(html, /おすすめ理由|商品の特徴|購入実績|デモ用の紹介文/);
+    assert.match(html, /評価4.5/);
+  }
+});
+
+test("特徴のみ・購入実績のみも表示し、デモ注記は表示しない", () => {
+  for (const kind of ["feature", "purchase"]) {
+    const recommendation = { group: "opposite", reasons: [{
+      source: kind === "feature" ? "demo_curated" : "database", kind, text: "理由本文",
+    }] };
+    const html = renderToStaticMarkup(ResultCard({ gift: { ...gift, recommendation }, rank: 1 }));
+    assert.equal((html.match(/<li>/g) ?? []).length, 1);
+    assert.match(html, /おすすめ理由/);
+    assert.doesNotMatch(html, /デモ用の紹介文/);
+    assert.doesNotMatch(html, /反対ポリシー/);
+  }
 });

@@ -13,7 +13,10 @@ function load(relativePath, modules = {}, globals = {}) {
   });
   const exports = {};
   runInNewContext(outputText, {
-    exports, require: (name) => modules[name] ?? require(name),
+    exports, require: (name) => modules[name] ?? (name === "@/lib/searchSession" ? {
+      loadSavedSearch: () => null, useIsClient: () => true,
+      clearSavedSearch() {}, saveSearchForm() {}, saveSearchResults() {}, saveSearchScroll() {},
+    } : require(name)),
     URLSearchParams, process: { env: {} }, console: { log() {} }, ...globals,
   });
   return exports;
@@ -29,9 +32,10 @@ function hooks() {
   return {
     reset() { stateIndex = 0; refIndex = 0; },
     react: {
+      useEffect() {},
       useState(initial) {
         const index = stateIndex++;
-        if (!(index in states)) states[index] = initial;
+        if (!(index in states)) states[index] = typeof initial === "function" ? initial() : initial;
         return [states[index], (next) => { states[index] = typeof next === "function" ? next(states[index]) : next; }];
       },
       useRef(initial) {

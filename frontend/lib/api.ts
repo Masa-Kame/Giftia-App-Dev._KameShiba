@@ -22,7 +22,7 @@ export type Gift = {
     purchaseQuantity: number;
     validReviewCount: number;
     bayesianRating: number | null;
-    reasons: { source: "database" | "demo_curated"; text: string }[];
+    reasons: { source: "database" | "demo_curated"; kind: "feature" | "purchase"; text: string }[];
   };
 };
 
