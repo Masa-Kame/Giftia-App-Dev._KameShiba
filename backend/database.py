@@ -52,6 +52,25 @@ def fetch_all(query: str, params: tuple = ()) -> list[dict]:
         conn.close()
 
 
+@contextmanager
+def db_cursor():
+    """読み取り用。1回の接続で複数の SELECT を実行する。
+    fetch_all() は1回ごとに Azure へ接続し直す（SSL・認証込みで1回数百ミリ秒）ため、
+    1つのAPIで何本も SELECT する場合はこちらを使うと速くなる。
+
+    使い方：
+        with db_cursor() as cur:
+            cur.execute("SELECT ...", (値,))
+            rows = cur.fetchall()
+    """
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            yield cur
+    finally:
+        conn.close()
+
+
 # ── ここから追加（口コミ機能 #6・#7・#11 で使う）─────────────────
 @contextmanager
 def transaction():

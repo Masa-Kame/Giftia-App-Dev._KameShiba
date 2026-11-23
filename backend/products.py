@@ -5,7 +5,7 @@
 
 from fastapi import APIRouter, HTTPException
 
-from database import fetch_all
+from database import db_cursor
 
 router = APIRouter(prefix="/api/products", tags=["products"])
 
@@ -18,27 +18,32 @@ def _to_bool(value):
 @router.get("/{product_id}")
 def get_product(product_id: str):
     """商品1件の情報と、付いているシーン・対象・好みタグを返す"""
-    rows = fetch_all("SELECT * FROM products WHERE product_id = %s", (product_id,))
-    if not rows:
-        raise HTTPException(status_code=404, detail="商品が見つかりません")
-    p = rows[0]
+    # 4本の SELECT を1回の接続でまとめて実行する（接続のやり直しを減らして速くする）
+    with db_cursor() as cur:
+        cur.execute("SELECT * FROM products WHERE product_id = %s", (product_id,))
+        p = cur.fetchone()
+        if p is None:
+            raise HTTPException(status_code=404, detail="商品が見つかりません")
 
-    scenes = fetch_all(
-        "SELECT scene_tag FROM product_scenes WHERE product_id = %s ORDER BY scene_tag",
-        (product_id,),
-    )
-    targets = fetch_all(
-        "SELECT target_age, target_gender FROM product_targets WHERE product_id = %s",
-        (product_id,),
-    )
-    preferences = fetch_all(
-        """SELECT t.preference_tag
-           FROM product_preference pp
-           JOIN preference_tags t ON t.preference_tag_id = pp.preference_tag_id
-           WHERE pp.product_id = %s
-           ORDER BY t.preference_category, t.preference_tag""",
-        (product_id,),
-    )
+        cur.execute(
+            "SELECT scene_tag FROM product_scenes WHERE product_id = %s ORDER BY scene_tag",
+            (product_id,),
+        )
+        scenes = cur.fetchall()
+        cur.execute(
+            "SELECT target_age, target_gender FROM product_targets WHERE product_id = %s",
+            (product_id,),
+        )
+        targets = cur.fetchall()
+        cur.execute(
+            """SELECT t.preference_tag
+               FROM product_preference pp
+               JOIN preference_tags t ON t.preference_tag_id = pp.preference_tag_id
+               WHERE pp.product_id = %s
+               ORDER BY t.preference_category, t.preference_tag""",
+            (product_id,),
+        )
+        preferences = cur.fetchall()
 
     rating = p.get("rating")
     # 列がないデータでも動くように p.get() で取り出す（ない項目は null になり、画面では表示しない）

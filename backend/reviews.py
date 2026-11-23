@@ -8,7 +8,7 @@ from datetime import date
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from database import fetch_all, transaction
+from database import db_cursor, fetch_all, transaction
 
 router = APIRouter(prefix="/api/products/{product_id}/reviews", tags=["reviews"])
 
@@ -45,23 +45,28 @@ def list_reviews(
         params.append(scene)
     condition = " AND ".join(where)
 
-    total = fetch_all(f"SELECT COUNT(*) AS n FROM reviews r WHERE {condition}", tuple(params))[0]["n"]
-    rows = fetch_all(
-        f"""SELECT {LIST_COLUMNS}
-            FROM reviews r
-            LEFT JOIN review_rating rr
-              ON rr.review_id = r.review_id AND rr.user_id = %s
-            WHERE {condition}
-            ORDER BY r.posted_at DESC, r.review_id DESC
-            LIMIT %s""",
-        (user_id, *params, limit),
-    )
+    # 3本の SELECT を1回の接続でまとめて実行する（接続のやり直しを減らして速くする）
+    with db_cursor() as cur:
+        cur.execute(f"SELECT COUNT(*) AS n FROM reviews r WHERE {condition}", tuple(params))
+        total = cur.fetchone()["n"]
+        cur.execute(
+            f"""SELECT {LIST_COLUMNS}
+                FROM reviews r
+                LEFT JOIN review_rating rr
+                  ON rr.review_id = r.review_id AND rr.user_id = %s
+                WHERE {condition}
+                ORDER BY r.posted_at DESC, r.review_id DESC
+                LIMIT %s""",
+            (user_id, *params, limit),
+        )
+        rows = cur.fetchall()
 
-    # シーンごとの件数(絞り込みボタンに表示する)。選んだシーンに関係なく、その商品の口コミ全体で数える
-    count_rows = fetch_all(
-        "SELECT scene_tag, COUNT(*) AS n FROM reviews WHERE product_id = %s GROUP BY scene_tag",
-        (product_id,),
-    )
+        # シーンごとの件数(絞り込みボタンに表示する)。選んだシーンに関係なく、その商品の口コミ全体で数える
+        cur.execute(
+            "SELECT scene_tag, COUNT(*) AS n FROM reviews WHERE product_id = %s GROUP BY scene_tag",
+            (product_id,),
+        )
+        count_rows = cur.fetchall()
     scene_counts = {s: 0 for s in SCENES}
     all_count = 0
     for r in count_rows:
