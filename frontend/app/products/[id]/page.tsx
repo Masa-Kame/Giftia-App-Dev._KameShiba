@@ -9,18 +9,18 @@ import ProductDetails from "@/components/ProductDetails";
 import SceneFilter from "@/components/SceneFilter";
 import ReviewList from "@/components/ReviewList";
 import ReviewForm from "@/components/ReviewForm";
+import ReviewSortSelect from "@/components/ReviewSortSelect";
 import ProductImage from "@/components/ProductImage";
 import ProductSkeleton from "@/components/ProductSkeleton";
 import { fetchProduct, type Product } from "@/lib/productApi";
 import { fetchReviews, type ReviewListResponse } from "@/lib/reviewApi";
-import { ALL_SCENES, type SceneFilterValue } from "@/types/review";
+import { ALL_SCENES, type SceneFilterValue, type SortValue } from "@/types/review";
 import styles from "@/components/review.module.css";
 import productStyles from "@/components/product.module.css";
 
 // 商品詳細画面　例：http://localhost:3000/products/G0001
 // 見た目はトップ画面（app/globals.css）にそろえている
 // ※ カート・購入・お気に入りは Phase1 の対象外のため、画面上の表示だけ（DBには保存しない）
-// TODO(#13): 口コミの並び替えUIを追加
 export default function ProductDetailPage() {
   const { id: productId } = useParams<{ id: string }>();
 
@@ -41,6 +41,7 @@ export default function ProductDetailPage() {
   // 口コミ
   const [selectedScene, setSelectedScene] =
     useState<SceneFilterValue>(ALL_SCENES);
+  const [sortValue, setSortValue] = useState<SortValue>("new"); // 並び順（#13）
   const [reloadKey, setReloadKey] = useState(0); // 増やすと一覧を読み直す
   const [reviewResult, setReviewResult] = useState<{
     key: string;
@@ -68,11 +69,11 @@ export default function ProductDetailPage() {
     };
   }, [productId]);
 
-  // シーンを切り替えたとき・投稿したときに、APIから口コミを取り直す（#8）
-  const reviewKey = `${productId}|${selectedScene}|${reloadKey}`;
+  // シーン・並び順を切り替えたとき・投稿したときに、APIから口コミを取り直す（#8・#13）
+  const reviewKey = `${productId}|${selectedScene}|${sortValue}|${reloadKey}`;
   useEffect(() => {
     let ignore = false;
-    fetchReviews(productId, selectedScene)
+    fetchReviews(productId, selectedScene, sortValue)
       .then((data) => {
         if (!ignore) setReviewResult({ key: reviewKey, data });
       })
@@ -87,7 +88,7 @@ export default function ProductDetailPage() {
     return () => {
       ignore = true;
     };
-  }, [productId, selectedScene, reviewKey]);
+  }, [productId, selectedScene, sortValue, reviewKey]);
 
   // 画面に使う値
   const product =
@@ -187,10 +188,13 @@ export default function ProductDetailPage() {
             counts={sceneCounts}
             allCount={allCount}
           />
-                    <p className="tag-hint">
-            選択中：{selectedScene}
-            {!isLoading && !error && `（${total}件）`}
-          </p>
+          <div className={styles.reviewToolbar}>
+            <p className="tag-hint">
+              選択中：{selectedScene}
+              {!isLoading && !error && `（${total}件）`}
+            </p>
+            <ReviewSortSelect value={sortValue} onChange={setSortValue} />
+          </div>
 
           {isLoading && <p className={styles.message}>読み込み中…</p>}
           {error && (
@@ -199,8 +203,8 @@ export default function ProductDetailPage() {
             </p>
           )}
           {!isLoading && !error && (
-            // key を変えると、シーン切り替え・投稿のたびに「5件表示」に戻る
-            <ReviewList key={`${selectedScene}-${reloadKey}`} reviews={reviews} />
+            // key を変えると、シーン・並び順の切り替えや投稿のたびに「5件表示」に戻る
+            <ReviewList key={`${selectedScene}-${sortValue}-${reloadKey}`} reviews={reviews} />
           )}
         </section>
 
