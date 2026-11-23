@@ -31,6 +31,7 @@ export default function ProductPurchase({
   const isSoldOut = stock <= 0;
 
   const rating = product.rating ?? 0;
+  const recentYearSalesCount = product.recent_year_sales_count ?? 0;
   const fullStars = Math.round(rating);
 
   const giftBadges = [
@@ -68,9 +69,9 @@ export default function ProductPurchase({
         </p>
       )}
 
-      {product.sales_count !== null && product.sales_count > 0 && (
+      {recentYearSalesCount > 0 && product.sales_period_start && product.sales_period_end && (
         <p className={styles.socialProof}>
-          直近1年で {product.sales_count.toLocaleString("ja-JP")} 個 購入されています
+          直近1年（{product.sales_period_start.replaceAll("-", "/")}〜{product.sales_period_end.replaceAll("-", "/")}）で {recentYearSalesCount.toLocaleString("ja-JP")} 個 購入されています
         </p>
       )}
 

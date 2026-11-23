@@ -3,9 +3,13 @@
 #   from products import router as products_router
 #   app.include_router(products_router)
 
+from calendar import monthrange
+from datetime import date, timedelta
+
 from fastapi import APIRouter, HTTPException, Query
 
 from database import db_cursor
+from ranking_config import DEMO_REFERENCE_DATE
 
 router = APIRouter(prefix="/api/products", tags=["products"])
 
@@ -15,15 +19,32 @@ def _to_bool(value):
     return None if value is None else bool(value)
 
 
+def _recent_year_bounds(reference: date) -> tuple[date, date]:
+    """基準日を含む直近1暦年。[開始日, 基準日の翌日)で日時を比較する。"""
+    end = reference + timedelta(days=1)
+    start = date(end.year - 1, end.month,
+                 min(end.day, monthrange(end.year - 1, end.month)[1]))
+    return start, end
+
+
 @router.get("/{product_id}")
 def get_product(product_id: str):
     """商品1件の情報と、付いているシーン・対象・好みタグを返す"""
-    # 4本の SELECT を1回の接続でまとめて実行する（接続のやり直しを減らして速くする）
+    period_start, period_end = _recent_year_bounds(DEMO_REFERENCE_DATE)
+    # 商品・属性・購入実績の SELECT を1回の接続でまとめて実行する。
     with db_cursor() as cur:
         cur.execute("SELECT * FROM products WHERE product_id = %s", (product_id,))
         p = cur.fetchone()
         if p is None:
             raise HTTPException(status_code=404, detail="商品が見つかりません")
+
+        cur.execute(
+            """SELECT COALESCE(SUM(oi.quantity), 0) AS purchased_quantity
+               FROM order_items oi JOIN orders o ON o.order_id = oi.order_id
+               WHERE oi.product_id = %s AND o.ordered_at >= %s AND o.ordered_at < %s""",
+            (product_id, period_start.isoformat(), period_end.isoformat()),
+        )
+        recent_year_sales_count = int(cur.fetchone()["purchased_quantity"])
 
         cur.execute(
             "SELECT scene_tag FROM product_scenes WHERE product_id = %s ORDER BY scene_tag",
@@ -61,6 +82,9 @@ def get_product(product_id: str):
         "rating": float(rating) if rating is not None else None,
         "review_count": p.get("review_count"),
         "sales_count": p.get("sales_count"),
+        "recent_year_sales_count": recent_year_sales_count,
+        "sales_period_start": period_start.isoformat(),
+        "sales_period_end": (period_end - timedelta(days=1)).isoformat(),
         "stock": p.get("stock"),
         "registered_at": p.get("registered_at"),
         "scenes": [r["scene_tag"] for r in scenes],
